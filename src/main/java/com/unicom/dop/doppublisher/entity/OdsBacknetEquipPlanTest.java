@@ -11,6 +11,8 @@ public class OdsBacknetEquipPlanTest{
 
     private String planName;
 
+    private String planTime;
+
     private String areaCity;
 
     private String neName;

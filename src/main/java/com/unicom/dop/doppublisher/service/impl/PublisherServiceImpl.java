@@ -61,18 +61,18 @@ public class PublisherServiceImpl implements PublisherService {
         try {
             List<OdsBacknetEquipPlanTest> odsBacknetEquipPlan = jsonObject.getJSONArray("OdsBacknetEquipPlan")
                     .toJavaList(OdsBacknetEquipPlanTest.class);
-            OdsBacknetEquipPlanIndex odsBacknetEquipPlanIndex = jsonObject.getJSONObject("OdsBacknetEquipPlanIndex")
-                    .toJavaObject(OdsBacknetEquipPlanIndex.class);
+//            OdsBacknetEquipPlanIndex odsBacknetEquipPlanIndex = jsonObject.getJSONObject("OdsBacknetEquipPlanIndex")
+//                    .toJavaObject(OdsBacknetEquipPlanIndex.class);
             if (oConvertUtils.listIsEmpty(odsBacknetEquipPlan)) {
                 return Result.error("新增失败，缺少参数");
             }
-            if (oConvertUtils.isEmpty(odsBacknetEquipPlanIndex)){
-                return Result.error("新增失败,缺少参数");
-            }
-            int insert = odsBacknetEquipPlanIndexMapper.insert(odsBacknetEquipPlanIndex);
-            if (insert<1){
-                return Result.error("新增失败");
-            }
+//            if (oConvertUtils.isEmpty(odsBacknetEquipPlanIndex)){
+//                return Result.error("新增失败,缺少参数");
+//            }
+//            int insert = odsBacknetEquipPlanIndexMapper.insert(odsBacknetEquipPlanIndex);
+//            if (insert<1){
+//                return Result.error("新增失败");
+//            }
             Integer i = odsBacknetEquipPlanTestMapper.insertAll(odsBacknetEquipPlan);
             if (i < 1) {
                 return Result.error("新增失败");

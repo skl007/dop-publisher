@@ -4,12 +4,12 @@
     <!--    新增退网设备-从表入库-->
     <insert id="insertAll" parameterType="java.util.ArrayList">
         insert into ods_backnet_equip_plan_test
-        (id,plan_num,plan_name,area_city,neName,equip_type,equip_factory,backnet_type,
+        (id,plan_num,plan_name,plan_time,area_city,neName,equip_type,equip_factory,backnet_type,
         ne_type,plan_backnet_time,electricity_price,is_buy_maintenance,save_money,is_bs,is_user_machroom,net_time,backnet_reason,
         is_used,is_invest,is_invest_workable,power_number,before_backnet_current,after_backnet_current,remarks,create_by)
         values
         <foreach collection="list" item="item" separator=",">
-            ( #{item.id},#{item.planNum},#{item.planName},#{item.areaCity},#{item.neName},#{item.equipType},
+            ( #{item.id},#{item.planNum},#{item.planName},#{item.planTime},#{item.areaCity},#{item.neName},#{item.equipType},
             #{item.equipFactory},#{item.backnetType},#{item.neType},#{item.planBacknetTime},#{item.electricityPrice},
             #{item.isBuyMaintenance},#{item.saveMoney},#{item.isBs},#{item.isUserMachroom},#{item.netTime},
             #{item.backnetReason},#{item.isUsed},#{item.isInvest},#{item.isInvestWorkable},#{item.powerNumber},#{item.beforeBacknetCurrent},
