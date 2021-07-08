@@ -1,17 +1,19 @@
 package com.unicom.dop.doppublisher.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.unicom.dop.doppublisher.common.Result;
 import com.unicom.dop.doppublisher.service.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
+@CrossOrigin
 public class PublichserEquipAnalyse {
 
     @Autowired
@@ -27,111 +29,113 @@ public class PublichserEquipAnalyse {
     @GetMapping("/equip/analyse/{area_city}/{grid_name}/{profession}/{equip_status_new}/{dt_month}")
     public String getDauEquipPlanAnalyse(@PathVariable("area_city") String area_city, @PathVariable("grid_name") String grid_name, @PathVariable("profession") String profession2, @PathVariable("equip_status_new") String equip_status_new, @PathVariable("dt_month") String dt_month) {
 
-            List<Map> equipPlanAnalyse = publisherService.getEquipPlanAnalyse(area_city, grid_name, profession2, equip_status_new, dt_month);
-            ArrayList<Map> tmpArr = new ArrayList<>();
-            Iterator<Map> iterator = equipPlanAnalyse.iterator();
-            while (iterator.hasNext()) {
-                Map obj = iterator.next();
-                if (obj == null) return "[{}]";
-                Object eqpSid;
-                Object areaCity;
-                Object gridName;
-                Object profession;
-                Object backnetType;
-                Object neName;
-                Object boardName;
-                Object planBacknetTime;
-                Object realBacknetTime;
-                Object planSaveCosts;
-                Object realSaveCosts;
-                Object realSaveElectricity;
-                Object saveMoney;
+        List<Map> equipPlanAnalyse = publisherService.getEquipPlanAnalyse(area_city, grid_name, profession2, equip_status_new, dt_month);
+        ArrayList<Map> tmpArr = new ArrayList<>();
+        Iterator<Map> iterator = equipPlanAnalyse.iterator();
+        while (iterator.hasNext()) {
+            Map obj = iterator.next();
+            if (obj == null) {
+                return "[{}]";
+            }
+            Object eqpSid;
+            Object areaCity;
+            Object gridName;
+            Object profession;
+            Object backnetType;
+            Object neName;
+            Object boardName;
+            Object planBacknetTime;
+            Object realBacknetTime;
+            Object planSaveCosts;
+            Object realSaveCosts;
+            Object realSaveElectricity;
+            Object saveMoney;
 
-                if (obj.get("eqpSid") == null) {
-                    eqpSid = "";
-                } else {
-                    eqpSid = (String) obj.get("eqpSid");
-                }
-                if (obj.get("areaCity") == null) {
-                    areaCity = "";
-                } else {
-                    areaCity = (String) obj.get("areaCity");
-                }
-                if (obj.get("gridName") == null) {
-                    gridName = "";
-                } else {
-                    gridName = (String) obj.get("gridName");
-                }
-                if (obj.get("profession") == null) {
-                    profession = "";
-                } else {
-                    profession = (String) obj.get("profession");
-                }
-                if (obj.get("backnetType") == null) {
-                    backnetType = "";
-                } else {
-                    backnetType = (String) obj.get("backnetType");
-                }
-                if (obj.get("neName") == null) {
-                    neName = "";
-                } else {
-                    neName = (String) obj.get("neName");
-                }
-                if (obj.get("boardName") == null) {
-                    boardName = "";
-                } else {
-                    boardName = (String) obj.get("boardName");
-                }
-                if (obj.get("planBacknetTime") == null) {
-                    planBacknetTime = "";
-                } else {
-                    planBacknetTime = (String) obj.get("planBacknetTime");
-                }
-                if (obj.get("realBacknetTime") == null) {
-                    realBacknetTime = "";
-                } else {
-                    realBacknetTime = (String) obj.get("realBacknetTime");
-                }
-                if (obj.get("planSaveCosts") == null) {
-                    planSaveCosts = "";
-                } else {
-                    planSaveCosts = (Double) obj.get("planSaveCosts");
-                }
-                if (obj.get("realSaveCosts") == null) {
-                    realSaveCosts = "";
-                } else {
-                    realSaveCosts = (Double) obj.get("realSaveCosts");
-                }
-                if (obj.get("realSaveElectricity") == null) {
-                    realSaveElectricity = "";
-                } else {
-                    realSaveElectricity = (Double) obj.get("realSaveElectricity");
-                }
-                if (obj.get("saveMoney") == null) {
-                    saveMoney = "";
-                } else {
-                    saveMoney = (String) obj.get("saveMoney");
-                }
-
-                Map model = new HashMap();
-                model.put("计划编号", eqpSid);
-                model.put("地市", areaCity);
-                model.put("网格", gridName);
-                model.put("专业", profession);
-                model.put("退网类型", backnetType);
-                model.put("网元名称", neName);
-                model.put("板卡名称", boardName);
-                model.put("计划退网时间", planBacknetTime);
-                model.put("实际退网时间", realBacknetTime);
-                model.put("计划节省成本/元", planSaveCosts);
-                model.put("实际节省成本/元", realSaveCosts);
-                model.put("节省电费/元", realSaveElectricity);
-                model.put("节省维保费/元", saveMoney);
-
-                tmpArr.add(model);
+            if (obj.get("eqpSid") == null) {
+                eqpSid = "";
+            } else {
+                eqpSid = (String) obj.get("eqpSid");
+            }
+            if (obj.get("areaCity") == null) {
+                areaCity = "";
+            } else {
+                areaCity = (String) obj.get("areaCity");
+            }
+            if (obj.get("gridName") == null) {
+                gridName = "";
+            } else {
+                gridName = (String) obj.get("gridName");
+            }
+            if (obj.get("profession") == null) {
+                profession = "";
+            } else {
+                profession = (String) obj.get("profession");
+            }
+            if (obj.get("backnetType") == null) {
+                backnetType = "";
+            } else {
+                backnetType = (String) obj.get("backnetType");
+            }
+            if (obj.get("neName") == null) {
+                neName = "";
+            } else {
+                neName = (String) obj.get("neName");
+            }
+            if (obj.get("boardName") == null) {
+                boardName = "";
+            } else {
+                boardName = (String) obj.get("boardName");
+            }
+            if (obj.get("planBacknetTime") == null) {
+                planBacknetTime = "";
+            } else {
+                planBacknetTime = (String) obj.get("planBacknetTime");
+            }
+            if (obj.get("realBacknetTime") == null) {
+                realBacknetTime = "";
+            } else {
+                realBacknetTime = (String) obj.get("realBacknetTime");
+            }
+            if (obj.get("planSaveCosts") == null) {
+                planSaveCosts = "";
+            } else {
+                planSaveCosts = (Double) obj.get("planSaveCosts");
+            }
+            if (obj.get("realSaveCosts") == null) {
+                realSaveCosts = "";
+            } else {
+                realSaveCosts = (Double) obj.get("realSaveCosts");
+            }
+            if (obj.get("realSaveElectricity") == null) {
+                realSaveElectricity = "";
+            } else {
+                realSaveElectricity = (Double) obj.get("realSaveElectricity");
+            }
+            if (obj.get("saveMoney") == null) {
+                saveMoney = "";
+            } else {
+                saveMoney = (String) obj.get("saveMoney");
             }
 
-            return JSON.toJSONString(tmpArr);
+            Map model = new HashMap();
+            model.put("计划编号", eqpSid);
+            model.put("地市", areaCity);
+            model.put("网格", gridName);
+            model.put("专业", profession);
+            model.put("退网类型", backnetType);
+            model.put("网元名称", neName);
+            model.put("板卡名称", boardName);
+            model.put("计划退网时间", planBacknetTime);
+            model.put("实际退网时间", realBacknetTime);
+            model.put("计划节省成本/元", planSaveCosts);
+            model.put("实际节省成本/元", realSaveCosts);
+            model.put("节省电费/元", realSaveElectricity);
+            model.put("节省维保费/元", saveMoney);
+
+            tmpArr.add(model);
+        }
+
+        return JSON.toJSONString(tmpArr);
 
     }
 
@@ -144,7 +148,9 @@ public class PublichserEquipAnalyse {
         Iterator<Map> iterator = equipPlanAnalyseDetial.iterator();
         while (iterator.hasNext()) {
             Map obj = iterator.next();
-            if (obj == null) return "[{}]";
+            if (obj == null) {
+                return "[{}]";
+            }
             Object eqpSid;
             Object areaCity;
             Object gridName;
@@ -316,5 +322,46 @@ public class PublichserEquipAnalyse {
 
         return JSON.toJSONString(tmpArr);
 
+    }
+
+
+    @RequestMapping(value = "test/addBackNet", method = RequestMethod.POST)
+    public Result addBackNet(JSONObject jsonObject) {
+        return publisherService.addBackNet(jsonObject);
+    }
+
+    /**
+     * 校验计划编号是否重复
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "test/verifyBackNet", method = RequestMethod.GET)
+    public Result verifyBackNet(HttpServletRequest request) {
+        return publisherService.verifyBackNet(request);
+    }
+
+    /**
+     * 获取退网设备详情
+     * @param pageNo
+     * @param pageSize
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "test/getBackNet", method = RequestMethod.GET)
+    public Result getBackNet(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                             @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                             @RequestParam(name="planNum") String planNum,
+                             @RequestParam(name="planName") String planName,
+                             HttpServletRequest request) {
+        return publisherService.getBackNet(pageNo,pageSize,planNum,planName,request);
+    }
+    @RequestMapping(value = "test/updateBackNet", method = RequestMethod.POST)
+    public Result updateBackNet(JSONObject jsonObject) {
+        return publisherService.updateBackNet(jsonObject);
+    }
+
+    @RequestMapping(value = "test/deleteBackNet", method = RequestMethod.POST)
+    public Result deleteBackNet(JSONObject jsonObject) {
+        return publisherService.deleteBackNet(jsonObject);
     }
 }

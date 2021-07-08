@@ -1,7 +1,10 @@
 package com.unicom.dop.doppublisher.service;
 
+import com.alibaba.fastjson.JSONObject;
+import com.unicom.dop.doppublisher.common.Result;
 import org.apache.ibatis.annotations.Param;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -14,4 +17,13 @@ public interface PublisherService {
     public List<Map> getEquipPlanAnalyseDetial(@Param("neName") String neName);
 
 
+    Result addBackNet(JSONObject jsonObject);
+
+    Result getBackNet(Integer pageNo,Integer pageSize,String planNum,String planName,HttpServletRequest request);
+
+    Result updateBackNet(JSONObject jsonObject);
+
+    Result deleteBackNet(JSONObject jsonObject);
+
+    Result verifyBackNet(HttpServletRequest request);
 }

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.unicom.dop.doppublisher.mapper.OdsBacknetEquipPlanTestMapper">
+    <!--    新增退网设备-从表入库-->
+    <insert id="insertAll" parameterType="java.util.ArrayList">
+        insert into ods_backnet_equip_plan_test
+        (id,plan_num,plan_name,area_city,neName,equip_type,equip_factory,backnet_type,
+        ne_type,plan_backnet_time,electricity_price,is_buy_maintenance,save_money,is_bs,is_user_machroom,net_time,backnet_reason,
+        is_used,is_invest,is_invest_workable,power_number,before_backnet_current,after_backnet_current,remarks,create_by)
+        values
+        <foreach collection="list" item="item" separator=",">
+            ( #{item.id},#{item.planNum},#{item.planName},#{item.areaCity},#{item.neName},#{item.equipType},
+            #{item.equipFactory},#{item.backnetType},#{item.neType},#{item.planBacknetTime},#{item.electricityPrice},
+            #{item.isBuyMaintenance},#{item.saveMoney},#{item.isBs},#{item.isUserMachroom},#{item.netTime},
+            #{item.backnetReason},#{item.isUsed},#{item.isInvest},#{item.isInvestWorkable},#{item.powerNumber},#{item.beforeBacknetCurrent},
+            #{item.afterBacknetCurrent},#{item.remarks},#{item.createBy})
+        </foreach>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest">
+        update ods_backnet_equip_plan_test
+        <set>
+            <if test="equipType !=null and equipType !=''">equip_type=#{equipType},</if>
+            <if test="equipFactory !=null and equipFactory !=''">equip_factory=#{equipFactory},</if>
+            <if test="backnetType !=null and backnetType!=''">backnet_type=#{backnetType},</if>
+            <if test="neType !=null and neType!=''">ne_type=#{neType},</if>
+            <if test="planBacknetTime!=null and planBacknetTime!=''">plan_backnet_time=#{planBacknetTime},</if>
+            <if test="electricityPrice !=null and electricityPrice !=''">electricity_price=#{electricityPrice},</if>
+            <if test="isBuyMaintenance !=null and isBuyMaintenance !=''">is_buy_maintenance=#{isBuyMaintenance},</if>
+            <if test="saveMoney !=null and saveMoney !=''">save_money=#{saveMoney},</if>
+            <if test="isBs !=null and isBs !=''">is_bs=#{isBs},</if>
+            <if test="isUserMachroom !=null and isUserMachroom !=''">is_user_machroom=#{isUserMachroom},</if>
+            <if test="netTime !=null and netTime !=''">net_time=#{netTime},</if>
+            <if test="backnetReason !=null and backnetReason !=''">backnet_reason=#{backnetReason},</if>
+            <if test="isUsed !=null and isUsed !=''">is_used=#{isUsed},</if>
+            <if test="isInvest !=null and isInvest !=''">is_invest=#{isInvest},</if>
+            <if test="isInvestWorkable !=null and isInvestWorkable !=''">is_invest_workable=#{isInvestWorkable},</if>
+            <if test="powerNumber !=null and powerNumber !=''">power_number=#{powerNumber},</if>
+            <if test="beforeBacknetCurrent !=null and beforeBacknetCurrent !=''">
+                before_backnet_current=#{beforeBacknetCurrent},
+            </if>
+            <if test="afterBacknetCurrent != null and afterBacknetCurrent !=''">
+                after_backnet_current=#{afterBacknetCurrent},
+            </if>
+            <if test="remarks !=null and remarks !=''">remarks=#{remarks},</if>
+            <if test="createBy !=null and createBy !=''">create_by=#{createBy}</if>
+        </set>
+        where area_city=#{areaCity} and neName=#{neName}
+    </update>
+    <delete id="deleteByPrimaryKey">
+        delete from ods_backnet_equip_plan_test where area_city=#{areaCity} and neName=#{neName}
+    </delete>
+
+    <resultMap id="baseMap" type="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest">
+        <result column="plan_num" property="planNum"></result>
+        <result column="plan_name" property="planName"></result>
+        <result column="area_city" property="areaCity"></result>
+        <result column="neName" property="neName"></result>
+        <result column="equip_type" property="equipType"></result>
+        <result column="equip_factory" property="equipFactory"></result>
+        <result column="backnet_type" property="backnetType"></result>
+        <result column="ne_type" property="neType"></result>
+        <result column="plan_backnet_time" property="planBacknetTime"></result>
+        <result column="electricity_price" property="electricityPrice"></result>
+        <result column="is_buy_maintenance" property="isBuyMaintenance"></result>
+        <result column="save_money" property="saveMoney"></result>
+        <result column="is_bs" property="isBs"></result>
+        <result column="is_user_machroom" property="isUserMachroom"></result>
+        <result column="net_time" property="netTime"></result>
+        <result column="backnet_reason" property="backnetReason"></result>
+        <result column="is_used" property="isUsed"></result>
+        <result column="is_invest" property="isInvest"></result>
+    </resultMap>
+    <select id="selectBackNetByPlanNumAndPlanName"
+            resultMap="baseMap">
+SELECT
+  id,
+  plan_num,
+  plan_name,
+  area_city,
+  neName,
+  equip_type,
+  equip_factory,
+  backnet_type,
+  ne_type,
+  plan_backnet_time,
+  electricity_price,
+  is_buy_maintenance,
+  save_money,
+  is_bs,
+  is_user_machroom,
+  net_time,
+  backnet_reason,
+  is_used,
+  is_invest,
+  is_invest_workable,
+  power_number,
+  before_backnet_current,
+  after_backnet_current,
+  remarks,
+  create_by,
+  insert_time
+FROM
+  ods_backnet_equip_plan_test
+WHERE plan_num = #{planNum}
+  AND plan_name = #{planName}
+  LIMIT ${(pageNo-1)*pageSize},${pageSize}
+    </select>
+</mapper>

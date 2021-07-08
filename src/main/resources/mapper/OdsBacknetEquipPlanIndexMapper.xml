@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.unicom.dop.doppublisher.mapper.OdsBacknetEquipPlanIndexMapper">
+
+    <insert id="insert" parameterType="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanIndex">
+        insert into ods_backnet_equip_plan_index (plan_num,plan_name,area_city,profession)
+        values (#{record.planNum},#{record.planName},#{record.areaCity},#{record.profession})
+    </insert>
+    <select id="selectByPrimaryKey" resultType="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanIndex">
+    select plan_num,plan_name,area_city,profession from ods_backnet_equip_plan_index where plan_num=#{planNum}
+</select>
+</mapper>
