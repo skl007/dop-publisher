@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Mapper
 public interface OdsBacknetEquipPlanIndexMapper {
     int deleteByPrimaryKey(String planNum);
@@ -18,4 +20,14 @@ public interface OdsBacknetEquipPlanIndexMapper {
     int updateByPrimaryKeySelective(OdsBacknetEquipPlanIndex record);
 
     int updateByPrimaryKey(OdsBacknetEquipPlanIndex record);
+
+    List<OdsBacknetEquipPlanIndex> selectAllPlan(@Param("pageNo") Integer pageNo,
+                                                 @Param("pageSize") Integer pageSize,
+                                                 @Param("planNum") String planNum,
+                                                 @Param("areaCity") String areaCity,
+                                                 @Param("profession") String profession);
+
+    Integer selectAllPlanCount(@Param("planNum") String planNum,
+                               @Param("areaCity") String areaCity,
+                               @Param("profession") String profession);
 }

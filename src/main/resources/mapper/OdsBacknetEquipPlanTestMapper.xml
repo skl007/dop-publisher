@@ -69,6 +69,13 @@
         <result column="backnet_reason" property="backnetReason"></result>
         <result column="is_used" property="isUsed"></result>
         <result column="is_invest" property="isInvest"></result>
+        <result column="is_invest_workable" property="isInvestWorkable"></result>
+        <result column="power_number" property="powerNumber"></result>
+        <result column="before_backnet_current" property="beforeBacknetCurrent"></result>
+        <result column="after_backnet_current" property="afterBacknetCurrent"></result>
+        <result column="remarks" property="remarks"></result>
+        <result column="create_by" property="createBy"></result>
+        <result column="insert_time" property="insertTime"></result>
     </resultMap>
     <select id="selectBackNetByPlanNumAndPlanName"
             resultMap="baseMap">
@@ -103,6 +110,15 @@ FROM
   ods_backnet_equip_plan_test
 WHERE plan_num = #{planNum}
   AND plan_name = #{planName}
+  order by insert_time desc
   LIMIT ${(pageNo-1)*pageSize},${pageSize}
+    </select>
+    <select id="countAll" resultType="java.lang.Integer">
+        SELECT
+  COUNT(plan_num) AS total
+FROM
+  ods_backnet_equip_plan_test
+WHERE plan_num = #{planNum}
+  AND plan_name = #{planName}
     </select>
 </mapper>

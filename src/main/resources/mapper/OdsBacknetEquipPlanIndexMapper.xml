@@ -3,10 +3,68 @@
 <mapper namespace="com.unicom.dop.doppublisher.mapper.OdsBacknetEquipPlanIndexMapper">
 
     <insert id="insert" parameterType="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanIndex">
-        insert into ods_backnet_equip_plan_index (plan_num,plan_name,area_city,profession)
-        values (#{record.planNum},#{record.planName},#{record.areaCity},#{record.profession})
+        insert into ods_backnet_equip_plan_index (plan_num,plan_name,area_city,profession,plan_backnet_time)
+        values (#{record.planNum},#{record.planName},#{record.areaCity},#{record.profession},#{record.planBacknetTime})
     </insert>
-    <select id="selectByPrimaryKey" resultType="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanIndex">
-    select plan_num,plan_name,area_city,profession from ods_backnet_equip_plan_index where plan_num=#{planNum}
+    <resultMap id="baseMap" type="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanIndex">
+        <result column="plan_num" property="planNum"></result>
+        <result column="plan_name" property="planName"></result>
+        <result column="area_city" property="areaCity"></result>
+        <result column="profession" property="profession"></result>
+        <result column="plan_backnet_time" property="planBacknetTime"></result>
+    </resultMap>
+    <select id="selectByPrimaryKey" resultMap="baseMap">
+    select plan_num,plan_name,area_city,profession,plan_backnet_time from ods_backnet_equip_plan_index where plan_num=#{planNum}
 </select>
+
+    <resultMap id="planMap" type="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanIndex">
+        <result column="plan_num" property="planNum"></result>
+        <result column="plan_name" property="planName"></result>
+        <result column="area_city" property="areaCity"></result>
+        <result column="profession" property="profession"></result>
+        <result column="plan_backnet_time" property="planBacknetTime"></result>
+        <result column="backNetEquipNumber" property="backNetEquipNumber"></result>
+        <result column="plan_save_costs" property="planSaveCosts"></result>
+    </resultMap>
+    <select id="selectAllPlan" resultMap="planMap">
+        SELECT
+        a.plan_num as plan_num,
+        a.plan_name as plan_name,
+        a.area_city as area_city,
+        a.profession as profession,
+        a.plan_backnet_time as plan_backnet_time,
+        COUNT(b.area_city) AS backNetEquipNumber,
+        CASE
+        WHEN (
+        b.power_number IS NOT NULL
+        AND b.power_number != ''
+        )
+        THEN IFNULL(b.save_money, 0) + b.power_number * 24 * 1.1 * IFNULL(b.electricity_price, 5.5) *
+        DATEDIFF('2021-12-31',b.plan_backnet_time)/1000
+        -- when (b.before_backnet_current is not)
+        END plan_save_costs
+        FROM
+        ods_backnet_equip_plan_index a
+        LEFT JOIN ods_backnet_equip_plan_test b
+        ON a.`plan_num` = b.`plan_num`
+        AND a.`plan_name` = b.`plan_name`
+        where 1=1
+        <if test="planNum !=null and planNum !=''">and a.`plan_num` =#{planNum}</if>
+        <if test="areaCity !=null and areaCity !=''">and a.`area_city` =#{areaCity}</if>
+        <if test="profession !=null and profession !=''">and a.`profession` =#{profession}</if>
+        GROUP BY a.`plan_num`,
+        a.`plan_name`,
+        a.area_city,
+        a.profession
+        ORDER BY a.`insert_time` DESC
+        LIMIT ${(pageNo-1)*pageSize},${pageSize}
+    </select>
+    <select id="selectAllPlanCount" resultType="java.lang.Integer">
+        SELECT COUNT(plan_num) AS total FROM ods_backnet_equip_plan_index where 1=1
+        <if test="planNum !=null and planNum !=''">and plan_num =#{planNum}</if>
+        <if test="areaCity !=null and areaCity !=''">and area_city =#{areaCity}</if>
+        <if test="profession !=null and profession !=''">and profession =#{profession}</if>
+    </select>
+
+
 </mapper>

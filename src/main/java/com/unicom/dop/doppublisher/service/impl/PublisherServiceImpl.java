@@ -87,24 +87,28 @@ public class PublisherServiceImpl implements PublisherService {
 
     /**
      * 获取退网信息
-     * @param request
+     * @param pageNo
+     * @param pageSize
+     * @param planNum
+     * @param planName
      * @return
      */
     @Override
-    public Result getBackNet(Integer pageNo,Integer pageSize,String planNum,String planName,HttpServletRequest request) {
-        //计划编号
-//        String planNum = request.getParameter("planNum");
-//        if (oConvertUtils.isEmpty(planNum)){
-//            return Result.error("计划编号为空！");
-//        }
-//        //计划名称
-//        String planName = request.getParameter("planName");
-//        if (oConvertUtils.isEmpty(planName)){
-//            return Result.error("计划名称为空！");
-//        }
+    public Result getBackNet(Integer pageNo,Integer pageSize,String planNum,String planName) {
+//   计划编号
+        if (oConvertUtils.isEmpty(planNum)){
+            return Result.error("计划编号为空！");
+        }
+        //计划名称
+        if (oConvertUtils.isEmpty(planName)){
+            return Result.error("计划名称为空！");
+        }
         List<OdsBacknetEquipPlanTest> list=odsBacknetEquipPlanTestMapper.selectBackNetByPlanNumAndPlanName(planNum,planName,pageNo,pageSize);
-
-        return Result.ok(list);
+       Integer total= odsBacknetEquipPlanTestMapper.countAll(planNum,planName);
+       JSONObject jsonObject=new JSONObject();
+       jsonObject.put("list",list);
+       jsonObject.put("total",total);
+        return Result.ok(jsonObject);
     }
 
     /**
@@ -164,5 +168,17 @@ public class PublisherServiceImpl implements PublisherService {
             return Result.ok();
         }
         return Result.error("计划已存在！");
+    }
+
+    @Override
+    public Result selectAllPlan(Integer pageNo, Integer pageSize, String planNum, String areaCity, String profession) {
+        JSONObject jsonObject=new JSONObject();
+        List<OdsBacknetEquipPlanIndex> list= odsBacknetEquipPlanIndexMapper.selectAllPlan(pageNo,pageSize,planNum,areaCity,profession);
+        if (oConvertUtils.listIsNotEmpty(list)){
+            Integer total=odsBacknetEquipPlanIndexMapper.selectAllPlanCount(planNum,areaCity,profession);
+            jsonObject.put("total",total);
+        }
+        jsonObject.put("list",list);
+        return Result.ok(jsonObject);
     }
 }

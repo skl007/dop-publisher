@@ -19,11 +19,13 @@ public interface PublisherService {
 
     Result addBackNet(JSONObject jsonObject);
 
-    Result getBackNet(Integer pageNo,Integer pageSize,String planNum,String planName,HttpServletRequest request);
+    Result getBackNet(Integer pageNo,Integer pageSize,String planNum,String planName);
 
     Result updateBackNet(JSONObject jsonObject);
 
     Result deleteBackNet(JSONObject jsonObject);
 
     Result verifyBackNet(HttpServletRequest request);
+
+    Result selectAllPlan(Integer pageNo, Integer pageSize, String planNum, String areaCity, String profession);
 }

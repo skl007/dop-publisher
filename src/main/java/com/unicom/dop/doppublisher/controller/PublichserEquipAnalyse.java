@@ -325,7 +325,7 @@ public class PublichserEquipAnalyse {
     }
 
 
-    @RequestMapping(value = "test/addBackNet", method = RequestMethod.POST)
+    @RequestMapping(value = "/equip/backnet/addBackNet", method = RequestMethod.POST)
     public Result addBackNet(JSONObject jsonObject) {
         return publisherService.addBackNet(jsonObject);
     }
@@ -335,7 +335,7 @@ public class PublichserEquipAnalyse {
      * @param request
      * @return
      */
-    @RequestMapping(value = "test/verifyBackNet", method = RequestMethod.GET)
+    @RequestMapping(value = "/equip/backnet/verifyBackNet", method = RequestMethod.GET)
     public Result verifyBackNet(HttpServletRequest request) {
         return publisherService.verifyBackNet(request);
     }
@@ -344,24 +344,31 @@ public class PublichserEquipAnalyse {
      * 获取退网设备详情
      * @param pageNo
      * @param pageSize
-     * @param request
      * @return
      */
-    @RequestMapping(value = "test/getBackNet", method = RequestMethod.GET)
+    @RequestMapping(value = "/equip/backnet/getBackNet", method = RequestMethod.GET)
     public Result getBackNet(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                              @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                              @RequestParam(name="planNum") String planNum,
-                             @RequestParam(name="planName") String planName,
-                             HttpServletRequest request) {
-        return publisherService.getBackNet(pageNo,pageSize,planNum,planName,request);
+                             @RequestParam(name="planName") String planName) {
+        return publisherService.getBackNet(pageNo,pageSize,planNum,planName);
     }
-    @RequestMapping(value = "test/updateBackNet", method = RequestMethod.POST)
+    @RequestMapping(value = "/equip/backnet/updateBackNet", method = RequestMethod.POST)
     public Result updateBackNet(JSONObject jsonObject) {
         return publisherService.updateBackNet(jsonObject);
     }
 
-    @RequestMapping(value = "test/deleteBackNet", method = RequestMethod.POST)
+    @RequestMapping(value = "/equip/backnet/deleteBackNet", method = RequestMethod.POST)
     public Result deleteBackNet(JSONObject jsonObject) {
         return publisherService.deleteBackNet(jsonObject);
+    }
+
+    @RequestMapping(value = "/equip/backnet/selectAllPlan",method = RequestMethod.GET)
+    public Result selectAllPlan(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                @RequestParam(name="planNum",required = false) String planNum,
+                                @RequestParam(name = "areaCity",required = false)String areaCity,
+                                @RequestParam(name = "profession",required = false)String profession){
+        return publisherService.selectAllPlan(pageNo,pageSize,planNum,areaCity,profession);
     }
 }
