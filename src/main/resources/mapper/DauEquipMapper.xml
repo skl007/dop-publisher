@@ -31,9 +31,12 @@
             board_name, -- 板卡名称
             plan_backnet_time , -- 计划退网时间
             real_backnet_time, -- 实际退网时间
-            IFNULL(save_money,0) + power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',plan_backnet_time)/1000 plan_save_costs, -- 计划节省成本(因没有电费单价,待完善*electricity_price)
-            IFNULL(save_money,0) + power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',real_backnet_time)/1000 real_save_costs, -- 实际节省成本
-            power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',real_backnet_time)/1000 real_save_electricity, -- 节省电费
+--             IFNULL(save_money,0) + power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',plan_backnet_time)/1000 plan_save_costs, -- 计划节省成本(因没有电费单价,待完善*electricity_price)
+            IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),plan_backnet_time)/1000 plan_save_costs, -- 计划节省成本(因没有电费单价,待完善*electricity_price)
+--             IFNULL(save_money,0) + power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',real_backnet_time)/1000 real_save_costs, -- 实际节省成本
+            IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),real_backnet_time)/1000 real_save_costs, -- 实际节省成本
+--             power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',real_backnet_time)/1000 real_save_electricity, -- 节省电费
+            IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),real_backnet_time)/1000 real_save_electricity, -- 节省电费
             save_money  -- 节省维保费
         FROM dwd_backnet_equip_analyse t
         where 1=1
@@ -52,6 +55,29 @@
             <if test="dt_month != 'ALL'">
                 and dt_month = #{dt_month}
             </if>
+        LIMIT ${(pageNo-1)*pageSize},${pageSize}
+    </select>
+
+    <select id="getEquipPlanAnalyseCount" resultType="java.lang.Integer">
+        SELECT
+        count(*) as total
+        FROM dwd_backnet_equip_analyse t
+        where 1=1
+        <if test="area_city != 'ALL'">
+            and area_city = #{area_city}
+        </if>
+        <if test="grid_name != 'ALL'">
+            and grid_name = #{grid_name}
+        </if>
+        <if test="profession != 'ALL'">
+            and  profession = #{profession}
+        </if>
+        <if test="equip_status_new != 'ALL'">
+            and equip_status_new = #{equip_status_new}
+        </if>
+        <if test="dt_month != 'ALL'">
+            and dt_month = #{dt_month}
+        </if>
     </select>
 
     <resultMap id="equipPlanAnalyse" type="java.util.Map">
@@ -93,12 +119,20 @@
             logtype, -- 稽核系统设备状态
             `STATUS`,  -- 资源系统设备状态
             equip_status_new, -- 退网设备状态
-            IFNULL(save_money,0) + power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',real_backnet_time)/1000 real_save_costs, -- 实际年度节省成本
+--             IFNULL(save_money,0) + power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',real_backnet_time)/1000 real_save_costs, -- 实际年度节省成本
+            IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_costs, -- 实际年度节省成本
             save_money,  -- 实际年度节省维保费
-            power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',real_backnet_time)/1000 real_save_electricity -- 实际年度节省电费
+--             power_dissipation *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF('2021-12-31',real_backnet_time)/1000 real_save_electricity -- 实际年度节省电费
+            IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_electricity -- 实际年度节省电费
         FROM dwd_backnet_equip_analyse t
         where neName = #{neName}
-
+         LIMIT ${(pageNo-1)*pageSize},${pageSize}
+    </select>
+    <select id="getEquipPlanAnalyseDetialCount" resultType="java.lang.Integer">
+         SELECT
+           count(1)
+        FROM dwd_backnet_equip_analyse t
+        where neName = #{neName}
     </select>
 
     <resultMap id="equipPlanAnalyseDetial" type="java.util.Map">

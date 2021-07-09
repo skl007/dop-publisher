@@ -53,6 +53,9 @@
     <delete id="deleteByPrimaryKey">
         delete from ods_backnet_equip_plan_test where area_city=#{areaCity} and neName=#{neName}
     </delete>
+    <delete id="deleteByPlanNumAndPlanName">
+        delete from ods_backnet_equip_plan_test where plan_num=#{planNum} and plan_name=#{planName}
+    </delete>
 
     <resultMap id="baseMap" type="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest">
         <result column="plan_num" property="planNum"></result>
@@ -126,6 +129,102 @@ WHERE plan_num = #{planNum}
         <if test="planName !=null and planName !=''">
             AND plan_name = #{planName}
         </if>
+    </select>
+    <resultMap id="planMap" type="java.util.Map">
+        <result column="plan_num" property="planNum"></result>
+        <result column="plan_name" property="planName"></result>
+        <result column="area_city" property="areaCity"></result>
+        <result column="profession" property="profession"></result>
+        <result column="plan_backnet_time" property="planBacknetTime"></result>
+        <result column="backNetEquipNumber" property="backNetEquipNumber"></result>
+        <result column="plan_save_costs" property="planSaveCosts"></result>
+    </resultMap>
+    <select id="selectAllPlan" resultType="java.util.Map">
+<!--        SELECT-->
+<!--        plan_num as planNum,-->
+<!--        plan_name as planName,-->
+<!--        plan_time as planTime,-->
+<!--        area_city as areaCity,-->
+<!--        profession,-->
+<!--        COUNT(*) as backNetEquipNumber,-->
+<!--        SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*-->
+<!--        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(NOW()),'-12-31'),plan_backnet_time)/1000) AS planSaveCosts-->
+<!--        FROM-->
+<!--        dwd_backnet_equip_analyse_test-->
+<!--        where 1=1-->
+<!--        <if test="planNum !=null and planNum !=''">and plan_num =#{planNum}</if>-->
+<!--        <if test="areaCity !=null and areaCity !=''">and area_city =#{areaCity}</if>-->
+<!--        <if test="profession !=null and profession !=''">and profession =#{profession}</if>-->
+<!--        GROUP BY plan_num,-->
+<!--        plan_name,-->
+<!--        area_city,-->
+<!--        profession-->
+<!--        LIMIT ${(pageNo-1)*pageSize},${pageSize}-->
+        select
+        t1.plan_num as planNum,
+        plan_name planName,
+        plan_time planTime,
+        area_city areaCity,
+        profession,
+        backnet_eqp_num as backNetEquipNumber,
+        plan_save_costs as planSaveCosts
+        from (
+        SELECT
+        plan_num,
+        plan_name,
+        plan_time,
+        area_city,
+        COUNT(*) backnet_eqp_num,
+        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)  plan_save_costs
+        FROM dwd_backnet_equip_analyse_test
+--         where plan_time > '2021-00' and '2021-13' > plan_time
+        GROUP BY plan_num, plan_name,area_city) t1
+        LEFT JOIN (
+        select plan_num,profession
+        from dwd_backnet_equip_analyse_test
+        where profession is not NULL
+--          and plan_time > '2021-00' and '2021-13' > plan_time
+        GROUP BY plan_num, plan_name,area_city) t2 on t1.plan_num = t2.plan_num
+        LIMIT ${(pageNo-1)*pageSize},${pageSize}
+    </select>
+    <select id="selectAllPlanCount" resultType="java.lang.Integer">
+<!--        SELECT COUNT(1) FROM (SELECT-->
+<!--        plan_num-->
+<!--        FROM-->
+<!--        dwd_backnet_equip_analyse_test-->
+<!--        WHERE 1=1-->
+<!--        <if test="planNum !=null and planNum !=''">and plan_num =#{planNum}</if>-->
+<!--        <if test="areaCity !=null and areaCity !=''">and area_city =#{areaCity}</if>-->
+<!--        <if test="profession !=null and profession !=''">and profession =#{profession}</if>-->
+<!--        GROUP BY plan_num,-->
+<!--        plan_name,-->
+<!--        area_city,-->
+<!--        profession)-->
+            select count(1) from (select
+        t1.plan_num as planNum,
+        plan_name planName,
+        plan_time planTime,
+        area_city areaCity,
+        profession,
+        backnet_eqp_num as backNetEquipNumber,
+        plan_save_costs as planSaveCosts
+        from (
+        SELECT
+        plan_num,
+        plan_name,
+        plan_time,
+        area_city,
+        COUNT(*) backnet_eqp_num,
+        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(NOW()),'-12-31'),plan_backnet_time)/1000),2)  plan_save_costs
+        FROM dwd_backnet_equip_analyse_test
+        --         where plan_time > '2021-00' and '2021-13' > plan_time
+        GROUP BY plan_num, plan_name,area_city) t1
+        LEFT JOIN (
+        select plan_num,profession
+        from dwd_backnet_equip_analyse_test
+        where profession is not NULL
+        --          and plan_time > '2021-00' and '2021-13' > plan_time
+        GROUP BY plan_num, plan_name,area_city) t2 on t1.plan_num = t2.plan_num)
     </select>
 
 
