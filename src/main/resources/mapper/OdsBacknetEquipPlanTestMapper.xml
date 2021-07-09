@@ -9,7 +9,8 @@
         is_used,is_invest,is_invest_workable,power_number,before_backnet_current,after_backnet_current,remarks,create_by)
         values
         <foreach collection="list" item="item" separator=",">
-            ( #{item.id},#{item.planNum},#{item.planName},#{item.planTime},#{item.areaCity},#{item.neName},#{item.equipType},
+            (
+            #{item.id},#{item.planNum},#{item.planName},#{item.planTime},#{item.areaCity},#{item.neName},#{item.equipType},
             #{item.equipFactory},#{item.backnetType},#{item.neType},#{item.planBacknetTime},#{item.electricityPrice},
             #{item.isBuyMaintenance},#{item.saveMoney},#{item.isBs},#{item.isUserMachroom},#{item.netTime},
             #{item.backnetReason},#{item.isUsed},#{item.isInvest},#{item.isInvestWorkable},#{item.powerNumber},#{item.beforeBacknetCurrent},
@@ -19,17 +20,20 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest">
         update ods_backnet_equip_plan_test
         <set>
+            <if test="planNum !=null and planNum !=''">plan_num=#{planNum},</if>
+            <if test="planName !=null and planName !=''">plan_name=#{planName},</if>
+            <if test="planTime !=null and planTime !=''">plan_time=#{planTime},</if>
             <if test="equipType !=null and equipType !=''">equip_type=#{equipType},</if>
             <if test="equipFactory !=null and equipFactory !=''">equip_factory=#{equipFactory},</if>
             <if test="backnetType !=null and backnetType!=''">backnet_type=#{backnetType},</if>
             <if test="neType !=null and neType!=''">ne_type=#{neType},</if>
             <if test="planBacknetTime!=null and planBacknetTime!=''">plan_backnet_time=#{planBacknetTime},</if>
-            <if test="electricityPrice !=null and electricityPrice !=''">electricity_price=#{electricityPrice},</if>
+            <if test="electricityPrice !=null and electricityPrice !=0.0">electricity_price=#{electricityPrice},</if>
             <if test="isBuyMaintenance !=null and isBuyMaintenance !=''">is_buy_maintenance=#{isBuyMaintenance},</if>
             <if test="saveMoney !=null and saveMoney !=''">save_money=#{saveMoney},</if>
             <if test="isBs !=null and isBs !=''">is_bs=#{isBs},</if>
             <if test="isUserMachroom !=null and isUserMachroom !=''">is_user_machroom=#{isUserMachroom},</if>
-            <if test="netTime !=null and netTime !=''">net_time=#{netTime},</if>
+            <if test="netTime !=null">net_time=#{netTime},</if>
             <if test="backnetReason !=null and backnetReason !=''">backnet_reason=#{backnetReason},</if>
             <if test="isUsed !=null and isUsed !=''">is_used=#{isUsed},</if>
             <if test="isInvest !=null and isInvest !=''">is_invest=#{isInvest},</if>
@@ -115,10 +119,14 @@ WHERE plan_num = #{planNum}
     </select>
     <select id="countAll" resultType="java.lang.Integer">
         SELECT
-  COUNT(plan_num) AS total
-FROM
-  ods_backnet_equip_plan_test
-WHERE plan_num = #{planNum}
-  AND plan_name = #{planName}
+        COUNT(plan_num) AS total
+        FROM
+        ods_backnet_equip_plan_test
+        WHERE plan_num = #{planNum}
+        <if test="planName !=null and planName !=''">
+            AND plan_name = #{planName}
+        </if>
     </select>
+
+
 </mapper>

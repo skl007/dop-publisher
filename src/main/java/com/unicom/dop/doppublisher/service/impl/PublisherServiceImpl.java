@@ -1,5 +1,6 @@
 package com.unicom.dop.doppublisher.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.unicom.dop.doppublisher.common.Result;
 import com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlan;
@@ -59,8 +60,10 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional(rollbackFor = Exception.class)
     public Result addBackNet(JSONObject jsonObject) {
         try {
-            List<OdsBacknetEquipPlanTest> odsBacknetEquipPlan = jsonObject.getJSONArray("OdsBacknetEquipPlan")
+            List<OdsBacknetEquipPlanTest> odsBacknetEquipPlan = jsonObject.getJSONArray("OdsBacknetEquipPlanList")
                     .toJavaList(OdsBacknetEquipPlanTest.class);
+
+
 //            OdsBacknetEquipPlanIndex odsBacknetEquipPlanIndex = jsonObject.getJSONObject("OdsBacknetEquipPlanIndex")
 //                    .toJavaObject(OdsBacknetEquipPlanIndex.class);
             if (oConvertUtils.listIsEmpty(odsBacknetEquipPlan)) {
@@ -75,6 +78,7 @@ public class PublisherServiceImpl implements PublisherService {
 //            }
             Integer i = odsBacknetEquipPlanTestMapper.insertAll(odsBacknetEquipPlan);
             if (i < 1) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return Result.error("新增失败");
             }
             return Result.ok("新增成功！");
@@ -120,10 +124,11 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional(rollbackFor = Exception.class)
     public Result updateBackNet(JSONObject jsonObject) {
         try {
-            OdsBacknetEquipPlanTest odsBacknetEquipPlanTest = jsonObject.getJSONObject("OdsBacknetEquipPlanTest")
+            OdsBacknetEquipPlanTest odsBacknetEquipPlanTest = jsonObject.getJSONObject("OdsBacknetEquipPlan")
                     .toJavaObject(OdsBacknetEquipPlanTest.class);
            Integer i= odsBacknetEquipPlanTestMapper.updateByPrimaryKeySelective(odsBacknetEquipPlanTest);
            if (i<1){
+               TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                return Result.error("修改信息失败");
            }
             return Result.ok();
@@ -147,9 +152,10 @@ public class PublisherServiceImpl implements PublisherService {
             String neName = jsonObject.getString("neName");
            Integer i= odsBacknetEquipPlanTestMapper.deleteByPrimaryKey(areaCity,neName);
            if (i<1){
+               TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                return Result.error("删除失败！");
            }
-            return Result.ok();
+            return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -163,8 +169,9 @@ public class PublisherServiceImpl implements PublisherService {
         if (oConvertUtils.isEmpty(planNum)){
             return Result.error("计划编号不能为空！");
         }
-        OdsBacknetEquipPlanIndex odsBacknetEquipPlanIndex = odsBacknetEquipPlanIndexMapper.selectByPrimaryKey(planNum);
-        if (oConvertUtils.isEmpty(odsBacknetEquipPlanIndex)){
+//        OdsBacknetEquipPlanIndex odsBacknetEquipPlanIndex = odsBacknetEquipPlanIndexMapper.selectByPrimaryKey(planNum);
+        Integer i = odsBacknetEquipPlanTestMapper.countAll(planNum,"");
+        if (oConvertUtils.isEmpty(i)||i==0){
             return Result.ok();
         }
         return Result.error("计划已存在！");

@@ -31,4 +31,6 @@ public interface OdsBacknetEquipPlanTestMapper {
     Integer deleteByPrimaryKey(@Param("areaCity") String areaCity, @Param("neName") String neName);
 
     Integer countAll(@Param("planNum") String planNum, @Param("planName") String planName);
+
+//    Integer verifyBackNet(@Param("planNum") String planNum);
 }

@@ -326,7 +326,7 @@ public class PublichserEquipAnalyse {
 
 
     @RequestMapping(value = "/equip/backnet/addBackNet", method = RequestMethod.POST)
-    public Result addBackNet(JSONObject jsonObject) {
+    public Result addBackNet(@RequestBody JSONObject jsonObject) {
         return publisherService.addBackNet(jsonObject);
     }
 
@@ -354,12 +354,12 @@ public class PublichserEquipAnalyse {
         return publisherService.getBackNet(pageNo,pageSize,planNum,planName);
     }
     @RequestMapping(value = "/equip/backnet/updateBackNet", method = RequestMethod.POST)
-    public Result updateBackNet(JSONObject jsonObject) {
+    public Result updateBackNet(@RequestBody JSONObject jsonObject) {
         return publisherService.updateBackNet(jsonObject);
     }
 
     @RequestMapping(value = "/equip/backnet/deleteBackNet", method = RequestMethod.POST)
-    public Result deleteBackNet(JSONObject jsonObject) {
+    public Result deleteBackNet(@RequestBody JSONObject jsonObject) {
         return publisherService.deleteBackNet(jsonObject);
     }
 
