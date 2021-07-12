@@ -64,7 +64,7 @@
             <!-- 针对 oracle 数据库的一个配置，是否把 schema 作为字包名 -->
             <property name="enableSubPackages" value="false" />
         </javaClientGenerator>
-        <table tableName="ods_backnet_equip_plan_index" domainObjectName="OdsBacknetEquipPlanIndex"
+        <table tableName="ods_backnet_task_management" domainObjectName="OdsBacknetTaskManagement"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">

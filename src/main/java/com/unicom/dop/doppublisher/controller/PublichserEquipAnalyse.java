@@ -27,19 +27,21 @@ public class PublichserEquipAnalyse {
         return JSON.toJSONString(personTrack);
     }
 
-    //    @GetMapping("/equip/analyse/{area_city}/{grid_name}/{profession}/{equip_status_new}/{dt_month}")
-    @GetMapping("/equip/analyse/{area_city}/{grid_name}/{profession}/{equip_status_new}/{dt_month}/{pageNo}/{pageSize}")
+    //@GetMapping("/equip/analyse/{area_city}/{grid_name}/{profession}/{equip_status_new}/{dt_month}")
+    @GetMapping("/equip/analyse/getAllEquip")
 //    public String getDauEquipPlanAnalyse(@PathVariable("area_city") String area_city, @PathVariable("grid_name") String grid_name, @PathVariable("profession") String profession2, @PathVariable("equip_status_new") String equip_status_new, @PathVariable("dt_month") String dt_month) {
-    public Result getDauEquipPlanAnalyse(@PathVariable("area_city") String area_city,
-                                         @PathVariable("grid_name") String grid_name,
-                                         @PathVariable("profession") String profession2,
-                                         @PathVariable("equip_status_new") String equip_status_new,
-                                         @PathVariable("dt_month") String dt_month,
-                                         @PathVariable(value = "pageNo",required = false) Integer pageNo,
-                                         @PathVariable(value = "pageSize",required = false) Integer pageSize) {
+    public Result getDauEquipPlanAnalyse(@RequestParam(value = "planNum",required = false) String planNum,
+                                         @RequestParam(value = "areaCity",required = false) String areaCity,
+                                         @RequestParam(value = "gridName",required = false) String gridName,
+                                         @RequestParam(value = "profession",required = false) String profession,
+                                         @RequestParam(value = "equipStatusNew",required = false) String equipStatusNew,
+                                         @RequestParam(name = "planYear", required = false) String planYear,
+                                         @RequestParam(name = "planMonth", required = false) String planMonth,
+                                         @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                         @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
 //        List<Map> equipPlanAnalyse = publisherService.getEquipPlanAnalyse(area_city, grid_name, profession2, equip_status_new, dt_month);
-        return publisherService.getEquipPlanAnalyse(area_city, grid_name, profession2, equip_status_new, dt_month,pageNo,pageSize);
+        return publisherService.getEquipPlanAnalyse(planNum,areaCity, gridName, profession, equipStatusNew, planYear,planMonth, pageNo, pageSize);
 //        JSONObject jsonObject=new JSONObject();
 //        ArrayList<Map> tmpArr = new ArrayList<>();
 //        Iterator<Map> iterator = equipPlanAnalyse.iterator();
@@ -151,14 +153,11 @@ public class PublichserEquipAnalyse {
     }
 
 
-//    @GetMapping("/equip/analyse/detail/{neName}")
-    @GetMapping("/equip/analyse/detail/{neName}/{pageNo}/{pageSize}")
+    @GetMapping("/equip/analyse/detail/{neName}")
 //    public String getDauEquipPlanAnalyseDetail(@PathVariable("neName") String neName2) {
-    public Result getDauEquipPlanAnalyseDetail(@PathVariable("neName") String neName2,
-                                               @PathVariable("pageNo")Integer pageNo,
-                                               @PathVariable("pageSize")Integer pageSize) {
+    public Result getDauEquipPlanAnalyseDetail(@PathVariable("neName") String neName2) {
 
-        return publisherService.getEquipPlanAnalyseDetial(neName2,pageNo,pageSize);
+        return publisherService.getEquipPlanAnalyseDetial(neName2);
 //        List<Map> equipPlanAnalyseDetial = publisherService.getEquipPlanAnalyseDetial(neName2);
 //        ArrayList<Map> tmpArr = new ArrayList<>();
 //        Iterator<Map> iterator = equipPlanAnalyseDetial.iterator();
@@ -368,8 +367,12 @@ public class PublichserEquipAnalyse {
     public Result getBackNet(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                              @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                              @RequestParam(name = "planNum") String planNum,
-                             @RequestParam(name = "planName") String planName) {
-        return publisherService.getBackNet(pageNo, pageSize, planNum, planName);
+                             @RequestParam(name = "planName") String planName,
+//                             @RequestParam(name = "areaCity") String areaCity,
+                             @RequestParam(name = "equipType", required = false) String equipType,
+                             @RequestParam(name = "equipFactory", required = false) String equipFactory,
+                             @RequestParam(name = "neName", required = false) String neName) {
+        return publisherService.getBackNet(pageNo, pageSize, planNum, planName, equipType, equipFactory, neName);
     }
 
     @RequestMapping(value = "/equip/backnet/updateBackNet", method = RequestMethod.POST)
@@ -386,13 +389,22 @@ public class PublichserEquipAnalyse {
     public Result selectAllPlan(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                 @RequestParam(name = "planNum", required = false) String planNum,
+                                @RequestParam(name = "planName", required = false) String planName,
                                 @RequestParam(name = "areaCity", required = false) String areaCity,
-                                @RequestParam(name = "profession", required = false) String profession) {
-        return publisherService.selectAllPlan(pageNo, pageSize, planNum, areaCity, profession);
+                                @RequestParam(name = "profession", required = false) String profession,
+                                @RequestParam(name = "planYear", required = false) String planYear,
+                                @RequestParam(name = "planMonth", required = false) String planMonth) {
+        return publisherService.selectAllPlan(pageNo, pageSize, planNum, planName, areaCity, profession, planYear, planMonth);
     }
 
-    @RequestMapping(value = "/equip/backnet/deleteAllPlan",method = RequestMethod.POST)
-    public Result deleteAllPlan(@RequestBody JSONObject jsonObject){
+    @RequestMapping(value = "/equip/backnet/deleteAllPlan", method = RequestMethod.POST)
+    public Result deleteAllPlan(@RequestBody JSONObject jsonObject) {
         return publisherService.deleteAllPlan(jsonObject);
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public Result selectTaskManagement(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        return publisherService.selectAllTask(pageNo, pageSize);
     }
 }

@@ -30,23 +30,41 @@ public interface OdsBacknetEquipPlanTestMapper {
     List<OdsBacknetEquipPlanTest> selectBackNetByPlanNumAndPlanName(@Param("planNum") String planNum,
                                                                     @Param("planName") String planName,
                                                                     @Param("pageNo") Integer pageNo,
-                                                                    @Param("pageSize") Integer pageSize);
+                                                                    @Param("pageSize") Integer pageSize,
+//                                                                    @Param("areaCity")String areaCity,
+                                                                    @Param("equipType")String equipType,
+                                                                    @Param("equipFactory")String equipFactory,
+                                                                    @Param("neName")String neName);
 
     Integer deleteByPrimaryKey(@Param("areaCity") String areaCity, @Param("neName") String neName);
 
-    Integer countAll(@Param("planNum") String planNum, @Param("planName") String planName);
+    Integer countAll(@Param("planNum") String planNum,
+                     @Param("planName") String planName,
+//                     @Param("areaCity")String areaCity,
+                     @Param("equipType")String equipType,
+                     @Param("equipFactory")String equipFactory,
+                     @Param("neName")String neName);
 
     List<Map<String, Object>> selectAllPlan(@Param("pageNo") Integer pageNo,
                                             @Param("pageSize") Integer pageSize,
                                             @Param("planNum") String planNum,
+                                            @Param("planName") String planName,
                                             @Param("areaCity") String areaCity,
-                                            @Param("profession") String profession);
+                                            @Param("profession") String profession,
+                                            @Param("planYear") String planYear,
+                                            @Param("planMonth") String planMonth,
+                                            @Param("flag")Integer flag);
 
     Integer selectAllPlanCount(@Param("planNum") String planNum,
+                               @Param("planName") String planName,
                                @Param("areaCity") String areaCity,
-                               @Param("profession") String profession);
+                               @Param("profession") String profession,
+                               @Param("planYear") String planYear,
+                               @Param("planMonth") String planMonth,
+                               @Param("flag")Integer flag);
 
     Integer deleteByPlanNumAndPlanName(@Param("planNum") String planNum, @Param("planName") String planName);
+    Integer deleteDWDByPlanNumAndPlanName(@Param("planNum") String planNum, @Param("planName") String planName);
 
 //    Integer verifyBackNet(@Param("planNum") String planNum);
 }

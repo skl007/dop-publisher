@@ -56,6 +56,9 @@
     <delete id="deleteByPlanNumAndPlanName">
         delete from ods_backnet_equip_plan_test where plan_num=#{planNum} and plan_name=#{planName}
     </delete>
+    <delete id="deleteDWDByPlanNumAndPlanName">
+        delete from dwd_backnet_equip_analyse_test where plan_num=#{planNum} and plan_name=#{planName}
+    </delete>
 
     <resultMap id="baseMap" type="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest">
         <result column="plan_num" property="planNum"></result>
@@ -86,39 +89,47 @@
     </resultMap>
     <select id="selectBackNetByPlanNumAndPlanName"
             resultMap="baseMap">
-SELECT
-  id,
-  plan_num,
-  plan_name,
-  area_city,
-  neName,
-  equip_type,
-  equip_factory,
-  backnet_type,
-  ne_type,
-  plan_backnet_time,
-  electricity_price,
-  is_buy_maintenance,
-  save_money,
-  is_bs,
-  is_user_machroom,
-  net_time,
-  backnet_reason,
-  is_used,
-  is_invest,
-  is_invest_workable,
-  power_number,
-  before_backnet_current,
-  after_backnet_current,
-  remarks,
-  create_by,
-  insert_time
-FROM
-  ods_backnet_equip_plan_test
-WHERE plan_num = #{planNum}
-  AND plan_name = #{planName}
-  order by insert_time desc
-  LIMIT ${(pageNo-1)*pageSize},${pageSize}
+        SELECT
+        plan_num,
+        plan_name,
+        area_city,
+        neName,
+        equip_type,
+        equip_factory,
+        backnet_type,
+        ne_type,
+        plan_backnet_time,
+        electricity_price,
+        is_buy_maintenance,
+        save_money,
+        is_bs,
+        is_user_machroom,
+        net_time,
+        backnet_reason,
+        is_used,
+        is_invest,
+        is_invest_workable,
+        power_number,
+        before_backnet_current,
+        after_backnet_current,
+        remarks,
+        create_by,
+        insert_time
+        FROM
+        ods_backnet_equip_plan_test
+        WHERE plan_num = #{planNum}
+        AND plan_name = #{planName}
+        <if test="equipType !=null and equipType !=''">
+            and equip_type=#{equipType}
+        </if>
+        <if test="equipFactory !=null and equipFactory !=''">
+            and equip_factory=#{equipFactory}
+        </if>
+        <if test="neName !=null and neName !=''">
+            and neName=#{neName}
+        </if>
+        ORDER BY plan_backnet_time,area_city,neName DESC
+        LIMIT ${(pageNo-1)*pageSize},${pageSize}
     </select>
     <select id="countAll" resultType="java.lang.Integer">
         SELECT
@@ -128,6 +139,15 @@ WHERE plan_num = #{planNum}
         WHERE plan_num = #{planNum}
         <if test="planName !=null and planName !=''">
             AND plan_name = #{planName}
+        </if>
+        <if test="equipType !=null and equipType !=''">
+            and equip_type=#{equipType}
+        </if>
+        <if test="equipFactory !=null and equipFactory !=''">
+            and equip_factory=#{equipFactory}
+        </if>
+        <if test="neName !=null and neName !=''">
+            and neName=#{neName}
         </if>
     </select>
     <resultMap id="planMap" type="java.util.Map">
@@ -140,67 +160,123 @@ WHERE plan_num = #{planNum}
         <result column="plan_save_costs" property="planSaveCosts"></result>
     </resultMap>
     <select id="selectAllPlan" resultType="java.util.Map">
-<!--        SELECT-->
-<!--        plan_num as planNum,-->
-<!--        plan_name as planName,-->
-<!--        plan_time as planTime,-->
-<!--        area_city as areaCity,-->
-<!--        profession,-->
-<!--        COUNT(*) as backNetEquipNumber,-->
-<!--        SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*-->
-<!--        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(NOW()),'-12-31'),plan_backnet_time)/1000) AS planSaveCosts-->
-<!--        FROM-->
-<!--        dwd_backnet_equip_analyse_test-->
-<!--        where 1=1-->
-<!--        <if test="planNum !=null and planNum !=''">and plan_num =#{planNum}</if>-->
-<!--        <if test="areaCity !=null and areaCity !=''">and area_city =#{areaCity}</if>-->
-<!--        <if test="profession !=null and profession !=''">and profession =#{profession}</if>-->
-<!--        GROUP BY plan_num,-->
-<!--        plan_name,-->
-<!--        area_city,-->
-<!--        profession-->
-<!--        LIMIT ${(pageNo-1)*pageSize},${pageSize}-->
         select
-        t1.plan_num as planNum,
-        plan_name planName,
-        plan_time planTime,
-        area_city areaCity,
+        t3.plan_num  planNum,
+        t3.plan_name planName,
+        t3.plan_time planTime,
+        t3.area_city areaCity,
         profession,
-        backnet_eqp_num as backNetEquipNumber,
-        plan_save_costs as planSaveCosts
+        backnet_eqp_num backNetEquipNumber,
+        plan_save_costs planSaveCosts
         from (
+        select plan_num, plan_name,plan_time,area_city
+        from ods_backnet_equip_plan_test
+        where 1=1
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+        group by plan_num, plan_name,plan_time,area_city) t3
+        left join (
         SELECT
         plan_num,
-        plan_name,
-        plan_time,
-        area_city,
         COUNT(*) backnet_eqp_num,
         ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)  plan_save_costs
         FROM dwd_backnet_equip_analyse_test
---         where plan_time > '2021-00' and '2021-13' > plan_time
-        GROUP BY plan_num, plan_name,area_city) t1
+        where 1=1
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+        GROUP BY plan_num, plan_name,plan_time,area_city) t1 on t3.plan_num = t1.plan_num
         LEFT JOIN (
         select plan_num,profession
         from dwd_backnet_equip_analyse_test
         where profession is not NULL
---          and plan_time > '2021-00' and '2021-13' > plan_time
-        GROUP BY plan_num, plan_name,area_city) t2 on t1.plan_num = t2.plan_num
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+        GROUP BY plan_num, plan_name,plan_time,area_city) t2 on t1.plan_num = t2.plan_num
+        WHERE 1=1
+        <if test="planNum !=null and planNum !=''">
+            and t3.plan_num LIKE concat('%',#{planNum},'%')
+        </if>
+        <if test="planName !=null and planName !=''">
+            AND t3.plan_name LIKE concat('%',#{planName},'%')
+        </if>
+        <if test="areaCity !=null and areaCity !=''">
+            AND t3.area_city=#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            AND t2.profession=#{profession}
+        </if>
+        ORDER BY t3.area_city,t3.plan_time DESC
         LIMIT ${(pageNo-1)*pageSize},${pageSize}
+<!--        select-->
+<!--        t1.plan_num as planNum,-->
+<!--        plan_name planName,-->
+<!--        plan_time planTime,-->
+<!--        area_city areaCity,-->
+<!--        profession,-->
+<!--        backnet_eqp_num as backNetEquipNumber,-->
+<!--        plan_save_costs as planSaveCosts-->
+<!--        from (-->
+<!--        SELECT-->
+<!--        plan_num,-->
+<!--        plan_name,-->
+<!--        plan_time,-->
+<!--        area_city,-->
+<!--        COUNT(*) backnet_eqp_num,-->
+<!--        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*-->
+<!--        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)-->
+<!--        plan_save_costs-->
+<!--        FROM dwd_backnet_equip_analyse_test-->
+<!--        &#45;&#45; where plan_time > '2021-00' and '2021-13' > plan_time-->
+<!--        where 1=1-->
+<!--        <if test="flag==1">-->
+<!--            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})-->
+<!--        </if>-->
+<!--        <if test="flag==2">-->
+<!--            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')-->
+<!--        </if>-->
+<!--        GROUP BY plan_num, plan_name,area_city) t1-->
+<!--        LEFT JOIN (-->
+<!--        select plan_num,profession-->
+<!--        from dwd_backnet_equip_analyse_test-->
+<!--        where profession is not NULL-->
+<!--        &#45;&#45; and plan_time > '2021-00' and '2021-13' > plan_time-->
+<!--        <if test="flag==1">-->
+<!--            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})-->
+<!--        </if>-->
+<!--        <if test="flag==2">-->
+<!--            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')-->
+<!--        </if>-->
+<!--        GROUP BY plan_num, plan_name,area_city) t2 on t1.plan_num = t2.plan_num-->
+<!--        WHERE 1=1-->
+<!--        <if test="planNum !=null and planNum !=''">-->
+<!--            and t1.plan_num LIKE concat('%',#{planNum},'%')-->
+<!--        </if>-->
+<!--        <if test="planName !=null and planName !=''">-->
+<!--            AND t1.plan_name LIKE concat('%',#{planName},'%')-->
+<!--        </if>-->
+<!--        <if test="areaCity !=null and areaCity !=''">-->
+<!--            AND t1.area_city=#{areaCity}-->
+<!--        </if>-->
+<!--        <if test="profession !=null and profession !=''">-->
+<!--            AND t2.profession=#{profession}-->
+<!--        </if>-->
+<!--        ORDER BY t1.plan_time,t1.plan_name,t1.area_city DESC-->
+<!--        LIMIT ${(pageNo-1)*pageSize},${pageSize}-->
     </select>
     <select id="selectAllPlanCount" resultType="java.lang.Integer">
-<!--        SELECT COUNT(1) FROM (SELECT-->
-<!--        plan_num-->
-<!--        FROM-->
-<!--        dwd_backnet_equip_analyse_test-->
-<!--        WHERE 1=1-->
-<!--        <if test="planNum !=null and planNum !=''">and plan_num =#{planNum}</if>-->
-<!--        <if test="areaCity !=null and areaCity !=''">and area_city =#{areaCity}</if>-->
-<!--        <if test="profession !=null and profession !=''">and profession =#{profession}</if>-->
-<!--        GROUP BY plan_num,-->
-<!--        plan_name,-->
-<!--        area_city,-->
-<!--        profession)-->
-            select count(1) from (select
+        select count(1) from (select
         t1.plan_num as planNum,
         plan_name planName,
         plan_time planTime,
@@ -215,16 +291,42 @@ WHERE plan_num = #{planNum}
         plan_time,
         area_city,
         COUNT(*) backnet_eqp_num,
-        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(NOW()),'-12-31'),plan_backnet_time)/1000),2)  plan_save_costs
+        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(NOW()),'-12-31'),plan_backnet_time)/1000),2) plan_save_costs
         FROM dwd_backnet_equip_analyse_test
-        --         where plan_time > '2021-00' and '2021-13' > plan_time
+        where 1=1
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
         GROUP BY plan_num, plan_name,area_city) t1
         LEFT JOIN (
         select plan_num,profession
         from dwd_backnet_equip_analyse_test
         where profession is not NULL
-        --          and plan_time > '2021-00' and '2021-13' > plan_time
-        GROUP BY plan_num, plan_name,area_city) t2 on t1.plan_num = t2.plan_num)
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+        GROUP BY plan_num, plan_name,area_city) t2 on t1.plan_num = t2.plan_num
+        WHERE 1=1
+        <if test="planNum !=null and planNum !=''">
+            and t1.plan_num LIKE concat('%',#{planNum},'%')
+        </if>
+        <if test="planName !=null and planName !=''">
+            AND t1.plan_name LIKE concat('%',#{planName},'%')
+        </if>
+        <if test="areaCity !=null and areaCity !=''">
+            AND t1.area_city=#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            AND t2.profession=#{profession}
+        </if>
+        )
     </select>
 
 
