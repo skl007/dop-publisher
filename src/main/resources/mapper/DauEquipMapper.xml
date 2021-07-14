@@ -13,46 +13,46 @@
     </select>
 
     <resultMap id="alarmTotalCount" type="java.util.Map">
-        <result column="eqp_sid" property="eqpSid" ></result>
-        <result column="area_city" property="areaCity" ></result>
-        <result column="grid_name" property="gridName" ></result>
+        <result column="eqp_sid" property="eqpSid"></result>
+        <result column="area_city" property="areaCity"></result>
+        <result column="grid_name" property="gridName"></result>
     </resultMap>
 
 
     <!-- -->
     <select id="getEquipPlanAnalyse" resultMap="baseMap">
-<!--        SELECT-->
-<!--            eqp_sid, &#45;&#45; 计划编号-->
-<!--            area_city , &#45;&#45; 地市-->
-<!--            grid_name, &#45;&#45; 网格名称-->
-<!--            profession, &#45;&#45; 专业-->
-<!--            backnet_type, &#45;&#45; 退网类型-->
-<!--            neName, &#45;&#45; 网元名称-->
-<!--            board_name, &#45;&#45; 板卡名称-->
-<!--            plan_backnet_time , &#45;&#45; 计划退网时间-->
-<!--            real_backnet_time, &#45;&#45; 实际退网时间-->
-<!--            IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000 plan_save_costs, &#45;&#45; 计划节省成本(因没有电费单价,待完善*electricity_price)-->
-<!--            IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_costs, &#45;&#45; 实际节省成本-->
-<!--            IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_electricity, &#45;&#45; 节省电费-->
-<!--            save_money  &#45;&#45; 节省维保费-->
-<!--        FROM dwd_backnet_equip_analyse_test t-->
-<!--        where 1=1-->
-<!--            <if test="area_city != 'ALL'">-->
-<!--                 and area_city = #{area_city}-->
-<!--            </if>-->
-<!--            <if test="grid_name != 'ALL'">-->
-<!--                and grid_name = #{grid_name}-->
-<!--            </if>-->
-<!--            <if test="profession != 'ALL'">-->
-<!--                and  profession = #{profession}-->
-<!--            </if>-->
-<!--            <if test="equip_status_new != 'ALL'">-->
-<!--                and equip_status_new = #{equip_status_new}-->
-<!--            </if>-->
-<!--            <if test="dt_month != 'ALL'">-->
-<!--                and dt_month = #{dt_month}-->
-<!--            </if>-->
-<!--            order by plan_backnet_time,area_city,neName desc-->
+        <!--        SELECT-->
+        <!--            eqp_sid, &#45;&#45; 计划编号-->
+        <!--            area_city , &#45;&#45; 地市-->
+        <!--            grid_name, &#45;&#45; 网格名称-->
+        <!--            profession, &#45;&#45; 专业-->
+        <!--            backnet_type, &#45;&#45; 退网类型-->
+        <!--            neName, &#45;&#45; 网元名称-->
+        <!--            board_name, &#45;&#45; 板卡名称-->
+        <!--            plan_backnet_time , &#45;&#45; 计划退网时间-->
+        <!--            real_backnet_time, &#45;&#45; 实际退网时间-->
+        <!--            IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000 plan_save_costs, &#45;&#45; 计划节省成本(因没有电费单价,待完善*electricity_price)-->
+        <!--            IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_costs, &#45;&#45; 实际节省成本-->
+        <!--            IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_electricity, &#45;&#45; 节省电费-->
+        <!--            save_money  &#45;&#45; 节省维保费-->
+        <!--        FROM dwd_backnet_equip_analyse_test t-->
+        <!--        where 1=1-->
+        <!--            <if test="area_city != 'ALL'">-->
+        <!--                 and area_city = #{area_city}-->
+        <!--            </if>-->
+        <!--            <if test="grid_name != 'ALL'">-->
+        <!--                and grid_name = #{grid_name}-->
+        <!--            </if>-->
+        <!--            <if test="profession != 'ALL'">-->
+        <!--                and  profession = #{profession}-->
+        <!--            </if>-->
+        <!--            <if test="equip_status_new != 'ALL'">-->
+        <!--                and equip_status_new = #{equip_status_new}-->
+        <!--            </if>-->
+        <!--            <if test="dt_month != 'ALL'">-->
+        <!--                and dt_month = #{dt_month}-->
+        <!--            </if>-->
+        <!--            order by plan_backnet_time,area_city,neName desc-->
         SELECT
         plan_num, -- 计划编号
         area_city , -- 地市
@@ -64,10 +64,16 @@
         logdate,-- 综合网管同步稽核时间
         order_time,-- 资源系统状态变更时间
         real_backnet_time, -- 实际退网时间
-        ROUND(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000,2) plan_save_costs, -- 计划节省成本(因没有电费单价,待完善*electricity_price)
-        ROUND(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000,2) real_save_costs, -- 实际节省成本
-        ROUND(IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000,2) real_save_electricity, -- 节省电费
-        save_money  -- 节省维保费
+        ROUND(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000,2)
+        plan_save_costs, -- 计划节省成本(因没有电费单价,待完善*electricity_price)
+        ROUND(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000,2)
+        real_save_costs, -- 实际节省成本
+        ROUND(IFNULL(power_dissipation,0) *24*1.1*
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000,2)
+        real_save_electricity, -- 节省电费
+        save_money -- 节省维保费
         FROM dwd_backnet_equip_analyse_test
         WHERE 1=1
         <if test="planNum !=null and planNum !=''">
@@ -95,20 +101,20 @@
         LIMIT ${(pageNo-1)*pageSize},${pageSize}
     </select>
     <resultMap id="baseMap" type="java.util.Map">
-        <result column="plan_num" property="planNum" ></result>
-        <result column="area_city" property="areaCity" ></result>
-        <result column="grid_name" property="gridName" ></result>
-        <result column="profession" property="profession" ></result>
-        <result column="backnet_type" property="backnetType" ></result>
-        <result column="neName" property="neName" ></result>
-        <result column="plan_backnet_time" property="planBacknetTime" ></result>
-        <result column="logdate" property="logdate" ></result>
-        <result column="order_time" property="orderTime" ></result>
-        <result column="real_backnet_time" property="realBacknetTime" ></result>
-        <result column="plan_save_costs" property="planSaveCosts" ></result>
-        <result column="real_save_costs" property="realSaveCosts" ></result>
-        <result column="real_save_electricity" property="realSaveElectricity" ></result>
-        <result column="save_money" property="saveMoney" ></result>
+        <result column="plan_num" property="planNum"></result>
+        <result column="area_city" property="areaCity"></result>
+        <result column="grid_name" property="gridName"></result>
+        <result column="profession" property="profession"></result>
+        <result column="backnet_type" property="backnetType"></result>
+        <result column="neName" property="neName"></result>
+        <result column="plan_backnet_time" property="planBacknetTime"></result>
+        <result column="logdate" property="logdate"></result>
+        <result column="order_time" property="orderTime"></result>
+        <result column="real_backnet_time" property="realBacknetTime"></result>
+        <result column="plan_save_costs" property="planSaveCosts"></result>
+        <result column="real_save_costs" property="realSaveCosts"></result>
+        <result column="real_save_electricity" property="realSaveElectricity"></result>
+        <result column="save_money" property="saveMoney"></result>
     </resultMap>
     <select id="getEquipPlanAnalyseCount" resultType="java.lang.Integer">
         SELECT
@@ -139,82 +145,102 @@
     </select>
 
     <resultMap id="equipPlanAnalyse" type="java.util.Map">
-        <result column="eqp_sid" property="eqpSid" ></result>
-        <result column="area_city" property="areaCity" ></result>
-        <result column="grid_name" property="gridName" ></result>
-        <result column="profession" property="profession" ></result>
-        <result column="backnet_type" property="backnetType" ></result>
-        <result column="neName" property="neName" ></result>
-        <result column="board_name" property="boardName" ></result>
-        <result column="plan_backnet_time" property="planBacknetTime" ></result>
-        <result column="real_backnet_time" property="realBacknetTime" ></result>
-        <result column="plan_save_costs" property="planSaveCosts" ></result>
-        <result column="real_save_costs" property="realSaveCosts" ></result>
-        <result column="real_save_electricity" property="realSaveElectricity" ></result>
-        <result column="save_money" property="saveMoney" ></result>
+        <result column="eqp_sid" property="eqpSid"></result>
+        <result column="area_city" property="areaCity"></result>
+        <result column="grid_name" property="gridName"></result>
+        <result column="profession" property="profession"></result>
+        <result column="backnet_type" property="backnetType"></result>
+        <result column="neName" property="neName"></result>
+        <result column="board_name" property="boardName"></result>
+        <result column="plan_backnet_time" property="planBacknetTime"></result>
+        <result column="real_backnet_time" property="realBacknetTime"></result>
+        <result column="plan_save_costs" property="planSaveCosts"></result>
+        <result column="real_save_costs" property="realSaveCosts"></result>
+        <result column="real_save_electricity" property="realSaveElectricity"></result>
+        <result column="save_money" property="saveMoney"></result>
     </resultMap>
 
     <!-- -->
     <select id="getEquipPlanAnalyseDetial" resultMap="equipPlanAnalyseDetial">
-        SELECT
-            eqp_sid, -- 计划编号
-            area_city, -- 地市
-            grid_name, -- 设备所在网格
-            profession, -- 专业
-            room_sname, -- 设备所在机房
-            eqp_type,-- 设备类型
-            reslvl,  -- 网络层级
-            backnet_type, -- 退网类型
-            equip_factory, -- 设备厂家
-            ne_type, -- 网元类型
-            neName, -- 网元名称
-            backnet_reason, -- 退网原因
-            net_time, -- 网管上网元创建时间
-            eqp_sid_rated_power,-- 标称功率
-            power_number,-- 网管功耗读数
-            plan_backnet_time , -- 计划退网时间
-            real_backnet_time, -- 实际退网时间
-            logtype, -- 稽核系统设备状态
-            `STATUS`,  -- 资源系统设备状态
-            equip_status_new, -- 退网设备状态
-            IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_costs, -- 实际年度节省成本
-            save_money,  -- 实际年度节省维保费
-            IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_electricity -- 实际年度节省电费
-        FROM dwd_backnet_equip_analyse_test t
-        where neName = #{neName}
-        order by plan_backnet_time,area_city,neName desc
+SELECT
+    plan_num, -- 计划编号
+    area_city, -- 地市
+    grid_name, -- 设备所在网格
+    profession, -- 专业
+    room_sname, -- 设备所在机房
+    eqp_type,-- 设备类型
+    reslvl,  -- 网络层级
+    backnet_type, -- 退网类型
+    equip_factory, -- 设备厂家
+    CASE is_user_machroom WHEN 0 THEN '否'
+    WHEN 1 THEN '是'
+    ELSE ''
+     END AS is_user_machroom,-- 是否用户机房：0否
+   CASE is_bs WHEN 0 THEN '否'
+   WHEN 1 THEN '是'
+   ELSE '' END AS is_bs, -- 是否基站
+    ne_type, -- 网元类型
+    neName, -- 网元名称
+    backnet_reason, -- 退网原因
+    net_time, -- 网管上网元创建时间
+   CASE is_buy_maintenance WHEN 0 THEN '否'
+   WHEN 1 THEN '是'
+   ELSE '' END AS is_buy_maintenance,-- 是否购买维保
+   CASE is_used WHEN 0 THEN '否'
+   WHEN 1 THEN '是'
+   ELSE '' END AS is_used, -- 是否要利旧
+    eqp_sid_rated_power,-- 标称功率
+   CASE is_invest WHEN 0 THEN '否'
+   WHEN 1 THEN '是'
+   ELSE '' END AS is_invest, -- 是否需要投资
+    power_number,-- 网管功耗读数
+    plan_backnet_time , -- 计划退网时间
+    real_backnet_time, -- 实际退网时间
+--     logtype, -- 稽核系统设备状态
+--     `STATUS`,  -- 资源系统设备状态
+    equip_status_new, -- 退网设备状态
+    IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_costs, -- 实际年度节省成本
+    save_money,  -- 实际年度节省维保费
+    IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000 real_save_electricity -- 实际年度节省电费
+    FROM dwd_backnet_equip_analyse_test t
+ WHERE neName = #{neName}
     </select>
-    <select id="getEquipPlanAnalyseDetialCount" resultType="java.lang.Integer">
-         SELECT
-           count(1)
-        FROM dwd_backnet_equip_analyse_test t
-        where neName = #{neName}
-    </select>
+    <!--    <select id="getEquipPlanAnalyseDetialCount" resultType="java.lang.Integer">-->
+    <!--         SELECT-->
+    <!--           count(1)-->
+    <!--        FROM dwd_backnet_equip_analyse_test t-->
+    <!--        where neName = #{neName}-->
+    <!--    </select>-->
 
     <resultMap id="equipPlanAnalyseDetial" type="java.util.Map">
-        <result column="eqp_sid" property="eqpSid" ></result>
-        <result column="area_city" property="areaCity" ></result>
-        <result column="grid_name" property="gridName" ></result>
-        <result column="profession" property="profession" ></result>
-        <result column="room_sname" property="roomSname" ></result>
-        <result column="eqp_type" property="eqpType" ></result>
-        <result column="reslvl" property="reslvl" ></result>
-        <result column="backnet_type" property="backnetType" ></result>
-        <result column="equip_factory" property="equipFactory" ></result>
-        <result column="ne_type" property="neType" ></result>
-        <result column="neName" property="neName" ></result>
-        <result column="backnet_reason" property="backnetReason" ></result>
-        <result column="net_time" property="netTime" ></result>
-        <result column="eqp_sid_rated_power" property="eqpSidRatedPower" ></result>
-        <result column="power_number" property="powerNumber" ></result>
-        <result column="plan_backnet_time" property="planBacknetTime" ></result>
-        <result column="real_backnet_time" property="realBacknetTime" ></result>
-        <result column="logtype" property="logtype" ></result>
-        <result column="STATUS" property="status" ></result>
-        <result column="equip_status_new" property="equipStatusNew" ></result>
-        <result column="real_save_costs" property="realSaveCosts" ></result>
-        <result column="save_money" property="saveMoney" ></result>
-        <result column="real_save_electricity" property="realSaveElectricity" ></result>
+        <result column="plan_num" property="planNum"></result>
+        <result column="area_city" property="areaCity"></result>
+        <result column="grid_name" property="gridName"></result>
+        <result column="profession" property="profession"></result>
+        <result column="room_sname" property="roomSname"></result>
+        <result column="eqp_type" property="eqpType"></result>
+        <result column="reslvl" property="reslvl"></result>
+        <result column="backnet_type" property="backnetType"></result>
+        <result column="equip_factory" property="equipFactory"></result>
+        <result column="is_user_machroom" property="isUserMachroom"></result>
+        <result column="is_bs" property="isBs"></result>
+        <result column="ne_type" property="neType"></result>
+        <result column="neName" property="neName"></result>
+        <result column="backnet_reason" property="backnetReason"></result>
+        <result column="net_time" property="netTime"></result>
+        <result column="is_buy_maintenance" property="isBuyMaintenance"></result>
+        <result column="is_used" property="isUsed"></result>
+        <result column="eqp_sid_rated_power" property="eqpSidRatedPower"></result>
+        <result column="is_invest" property="isInvest"></result>
+        <result column="power_number" property="powerNumber"></result>
+        <result column="plan_backnet_time" property="planBacknetTime"></result>
+        <result column="real_backnet_time" property="realBacknetTime"></result>
+<!--        <result column="logtype" property="logtype"></result>-->
+<!--        <result column="STATUS" property="status"></result>-->
+        <result column="equip_status_new" property="equipStatusNew"></result>
+        <result column="real_save_costs" property="realSaveCosts"></result>
+        <result column="save_money" property="saveMoney"></result>
+        <result column="real_save_electricity" property="realSaveElectricity"></result>
     </resultMap>
 
 </mapper>

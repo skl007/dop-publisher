@@ -50,6 +50,15 @@
         </set>
         where area_city=#{areaCity} and neName=#{neName}
     </update>
+    <update id="updateByPlanNumAndPlanName">
+        UPDATE
+  ods_backnet_equip_plan_test
+    SET
+      plan_num = #{nPlanNum}
+      , plan_name = #{nPlanName}
+        ,plan_time=#{nPlanTime}
+      WHERE plan_num=#{planNum}
+    </update>
     <delete id="deleteByPrimaryKey">
         delete from ods_backnet_equip_plan_test where area_city=#{areaCity} and neName=#{neName}
     </delete>
@@ -161,7 +170,7 @@
     </resultMap>
     <select id="selectAllPlan" resultType="java.util.Map">
         select
-        t3.plan_num  planNum,
+        t3.plan_num planNum,
         t3.plan_name planName,
         t3.plan_time planTime,
         t3.area_city areaCity,
@@ -183,7 +192,9 @@
         SELECT
         plan_num,
         COUNT(*) backnet_eqp_num,
-        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)  plan_save_costs
+        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)
+        plan_save_costs
         FROM dwd_backnet_equip_analyse_test
         where 1=1
         <if test="flag==1">
@@ -219,61 +230,61 @@
         </if>
         ORDER BY t3.area_city,t3.plan_time DESC
         LIMIT ${(pageNo-1)*pageSize},${pageSize}
-<!--        select-->
-<!--        t1.plan_num as planNum,-->
-<!--        plan_name planName,-->
-<!--        plan_time planTime,-->
-<!--        area_city areaCity,-->
-<!--        profession,-->
-<!--        backnet_eqp_num as backNetEquipNumber,-->
-<!--        plan_save_costs as planSaveCosts-->
-<!--        from (-->
-<!--        SELECT-->
-<!--        plan_num,-->
-<!--        plan_name,-->
-<!--        plan_time,-->
-<!--        area_city,-->
-<!--        COUNT(*) backnet_eqp_num,-->
-<!--        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*-->
-<!--        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)-->
-<!--        plan_save_costs-->
-<!--        FROM dwd_backnet_equip_analyse_test-->
-<!--        &#45;&#45; where plan_time > '2021-00' and '2021-13' > plan_time-->
-<!--        where 1=1-->
-<!--        <if test="flag==1">-->
-<!--            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})-->
-<!--        </if>-->
-<!--        <if test="flag==2">-->
-<!--            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')-->
-<!--        </if>-->
-<!--        GROUP BY plan_num, plan_name,area_city) t1-->
-<!--        LEFT JOIN (-->
-<!--        select plan_num,profession-->
-<!--        from dwd_backnet_equip_analyse_test-->
-<!--        where profession is not NULL-->
-<!--        &#45;&#45; and plan_time > '2021-00' and '2021-13' > plan_time-->
-<!--        <if test="flag==1">-->
-<!--            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})-->
-<!--        </if>-->
-<!--        <if test="flag==2">-->
-<!--            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')-->
-<!--        </if>-->
-<!--        GROUP BY plan_num, plan_name,area_city) t2 on t1.plan_num = t2.plan_num-->
-<!--        WHERE 1=1-->
-<!--        <if test="planNum !=null and planNum !=''">-->
-<!--            and t1.plan_num LIKE concat('%',#{planNum},'%')-->
-<!--        </if>-->
-<!--        <if test="planName !=null and planName !=''">-->
-<!--            AND t1.plan_name LIKE concat('%',#{planName},'%')-->
-<!--        </if>-->
-<!--        <if test="areaCity !=null and areaCity !=''">-->
-<!--            AND t1.area_city=#{areaCity}-->
-<!--        </if>-->
-<!--        <if test="profession !=null and profession !=''">-->
-<!--            AND t2.profession=#{profession}-->
-<!--        </if>-->
-<!--        ORDER BY t1.plan_time,t1.plan_name,t1.area_city DESC-->
-<!--        LIMIT ${(pageNo-1)*pageSize},${pageSize}-->
+        <!--        select-->
+        <!--        t1.plan_num as planNum,-->
+        <!--        plan_name planName,-->
+        <!--        plan_time planTime,-->
+        <!--        area_city areaCity,-->
+        <!--        profession,-->
+        <!--        backnet_eqp_num as backNetEquipNumber,-->
+        <!--        plan_save_costs as planSaveCosts-->
+        <!--        from (-->
+        <!--        SELECT-->
+        <!--        plan_num,-->
+        <!--        plan_name,-->
+        <!--        plan_time,-->
+        <!--        area_city,-->
+        <!--        COUNT(*) backnet_eqp_num,-->
+        <!--        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*-->
+        <!--        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)-->
+        <!--        plan_save_costs-->
+        <!--        FROM dwd_backnet_equip_analyse_test-->
+        <!--        &#45;&#45; where plan_time > '2021-00' and '2021-13' > plan_time-->
+        <!--        where 1=1-->
+        <!--        <if test="flag==1">-->
+        <!--            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})-->
+        <!--        </if>-->
+        <!--        <if test="flag==2">-->
+        <!--            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')-->
+        <!--        </if>-->
+        <!--        GROUP BY plan_num, plan_name,area_city) t1-->
+        <!--        LEFT JOIN (-->
+        <!--        select plan_num,profession-->
+        <!--        from dwd_backnet_equip_analyse_test-->
+        <!--        where profession is not NULL-->
+        <!--        &#45;&#45; and plan_time > '2021-00' and '2021-13' > plan_time-->
+        <!--        <if test="flag==1">-->
+        <!--            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})-->
+        <!--        </if>-->
+        <!--        <if test="flag==2">-->
+        <!--            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')-->
+        <!--        </if>-->
+        <!--        GROUP BY plan_num, plan_name,area_city) t2 on t1.plan_num = t2.plan_num-->
+        <!--        WHERE 1=1-->
+        <!--        <if test="planNum !=null and planNum !=''">-->
+        <!--            and t1.plan_num LIKE concat('%',#{planNum},'%')-->
+        <!--        </if>-->
+        <!--        <if test="planName !=null and planName !=''">-->
+        <!--            AND t1.plan_name LIKE concat('%',#{planName},'%')-->
+        <!--        </if>-->
+        <!--        <if test="areaCity !=null and areaCity !=''">-->
+        <!--            AND t1.area_city=#{areaCity}-->
+        <!--        </if>-->
+        <!--        <if test="profession !=null and profession !=''">-->
+        <!--            AND t2.profession=#{profession}-->
+        <!--        </if>-->
+        <!--        ORDER BY t1.plan_time,t1.plan_name,t1.area_city DESC-->
+        <!--        LIMIT ${(pageNo-1)*pageSize},${pageSize}-->
     </select>
     <select id="selectAllPlanCount" resultType="java.lang.Integer">
         select count(1) from (select
@@ -327,6 +338,233 @@
             AND t2.profession=#{profession}
         </if>
         )
+    </select>
+    <select id="getNumberData" resultType="java.util.Map">
+    select
+        eqp_num eqpNum, -- 设备总量
+       case when plan_save_costs is null then 0 else plan_save_costs end planSaveCosts, -- 预计压降成本
+        backnet_eqp_num backnetEqpNum, -- 已退网设备个数
+        unbacknet_eqp_num unbacknetEqpNum, -- 未退网设备个数
+        onbacknet_eqp_num onbacknetEqpNum, -- 退网中设备个数
+        undelay_backnet_eqp_num undelayBacknetEqpNum, -- 未延期退网设备个数
+        delay_backnet_eqp_num delayBacknetEqpNum, -- 延期退网设备个数
+        backnet_reserve_eqp_num backnetReserveEqpNum, -- 已退网转备设备个数
+        backnet_obsolescence_eqp_num backnetObsolescenceEqpNum -- 已退网待报废设备个数
+    from (
+        SELECT
+            count(*) eqp_num, -- 设备总量
+            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation ,0)*24*1.1*
+            IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)
+            plan_save_costs, -- 预计压降成本
+            '0' common
+        from dwd_backnet_equip_analyse_test
+        where 1=1
+        <if test="areaCity !=null and areaCity !=''">
+            and area_city =#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            and profession=#{profession}
+        </if>
+        <if test="gridName !=null and gridName !=''">
+            and grid_name=#{gridName}
+        </if>
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+    ) t1
+    left JOIN(
+        SELECT
+            count(*) backnet_eqp_num,
+            '0' common
+            from dwd_backnet_equip_analyse_test
+            where 1=1
+                and equip_status_new = '已退网'
+    ) t2 on t1.common = t2.common
+    LEFT JOIN(
+        SELECT
+            count(*) unbacknet_eqp_num,
+            '0' common
+        from dwd_backnet_equip_analyse_test
+        where 1=1
+        and equip_status_new = '未退网'
+    ) t3 on t1.common = t3.common
+    LEFT JOIN(
+        SELECT
+            count(*) onbacknet_eqp_num,
+            '0' common
+        from dwd_backnet_equip_analyse_test
+        where 1=1
+        <if test="areaCity !=null and areaCity !=''">
+            and area_city =#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            and profession=#{profession}
+        </if>
+        <if test="gridName !=null and gridName !=''">
+            and grid_name=#{gridName}
+        </if>
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+            and equip_status_new = '退网中'
+    ) t4 on t1.common = t4.common
+    LEFT JOIN(
+        SELECT
+            count(*) undelay_backnet_eqp_num, -- 未延期退网设备
+            '0' common
+        from dwd_backnet_equip_analyse_test
+        where 1=1
+        <if test="areaCity !=null and areaCity !=''">
+            and area_city =#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            and profession=#{profession}
+        </if>
+        <if test="gridName !=null and gridName !=''">
+            and grid_name=#{gridName}
+        </if>
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+            and equip_status_new = '已退网' and  plan_backnet_time >= real_backnet_time
+    ) t5 on t1.common = t5.common
+    LEFT JOIN(
+        SELECT
+            count(*) delay_backnet_eqp_num, -- 延期退网设备
+            '0' common
+        from dwd_backnet_equip_analyse_test
+        where 1=1
+        <if test="areaCity !=null and areaCity !=''">
+            and area_city =#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            and profession=#{profession}
+        </if>
+        <if test="gridName !=null and gridName !=''">
+            and grid_name=#{gridName}
+        </if>
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+         and equip_status_new = '已退网' and real_backnet_time > plan_backnet_time
+    ) t6 on t1.common = t6.common
+    LEFT JOIN(
+        SELECT
+            count(*) backnet_reserve_eqp_num, -- 已退网设备之转备
+            '0' common
+        from dwd_backnet_equip_analyse_test tmp
+        where 1=1
+        <if test="areaCity !=null and areaCity !=''">
+            and area_city =#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            and profession=#{profession}
+        </if>
+        <if test="gridName !=null and gridName !=''">
+            and grid_name=#{gridName}
+        </if>
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+            and equip_status_new = '已退网' and tmp.`STATUS` = '备件/空闲'
+    ) t7 on t1.common = t7.common
+    LEFT JOIN(
+        SELECT
+            count(*) backnet_obsolescence_eqp_num, -- 已退网待报废设备
+            '0' common
+        from dwd_backnet_equip_analyse_test tmp
+        where 1=1
+        <if test="areaCity !=null and areaCity !=''">
+            and area_city =#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            and profession=#{profession}
+        </if>
+        <if test="gridName !=null and gridName !=''">
+            and grid_name=#{gridName}
+        </if>
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+            and equip_status_new = '已退网' and tmp.`STATUS` = '资源清除'
+    ) t8 on t1.common = t8.common
+    </select>
+    <select id="planMonitoring" resultType="java.util.Map">
+        -- 退网作业计划监控
+    select
+        t1.plan_time planTime,-- 计划时间
+        case when plan_backnet_num is null then 0 else plan_backnet_num end  planBacknetNum,-- 计划退网数量
+        case when plan_save_costs is null then 0 else plan_save_costs end planSaveCosts,-- 预计压降成本
+        case when real_backnet_num is null then 0 else real_backnet_num end realBacknetNum,-- 实际退网数
+        case when real_save_costs is null then 0 else real_save_costs end realSaveCosts-- 实际压降成本
+--         case when real_save_costs is null then 0 end realSaveCosts-- 实际压降成本
+    from (
+        select
+            plan_time,
+            COUNT(*) plan_backnet_num,
+            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2) plan_save_costs
+        from dwd_backnet_equip_analyse_test
+        where 1=1
+        and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+--         plan_time>'2021-00' and  plan_time &lt; '2021-13'
+        GROUP BY plan_time) t1
+    LEFT JOIN(
+        select
+            plan_time,
+            COUNT(*) real_backnet_num,
+            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000),2) real_save_costs
+        from dwd_backnet_equip_analyse_test
+        where 1=1
+        and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+--         plan_time>'2021-00' and  plan_time &lt;'2021-13'
+        and equip_status_new = '已退网'
+        GROUP BY plan_time) t2 on t1.plan_time = t2.plan_time
+        order by t1.plan_time
+    </select>
+    <select id="planArea" resultType="java.util.Map">
+    select
+        t1.area_city areaCity,-- 地市
+        case when plan_backnet_num is null then 0 else plan_backnet_num end  planBacknetNum,-- 计划退网数量
+        case when plan_save_costs is null then 0 else plan_save_costs end planSaveCosts,-- 预计压降成本
+        case when real_backnet_num is null then 0 else real_backnet_num end realBacknetNum,-- 实际退网数
+        case when real_save_costs is null then 0 else real_save_costs end realSaveCosts-- 实际压降成本
+    from (
+        select
+            area_city,
+            COUNT(*) plan_backnet_num,
+            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2) plan_save_costs
+        from dwd_backnet_equip_analyse_test
+        where
+         plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+    GROUP BY area_city) t1
+    LEFT JOIN(
+        select
+            area_city,
+            COUNT(*) real_backnet_num,
+            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000),2) real_save_costs
+        from dwd_backnet_equip_analyse_test
+        where
+         plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        and equip_status_new = '已退网'
+    GROUP BY area_city) t2 on t1.area_city = t2.area_city
     </select>
 
 

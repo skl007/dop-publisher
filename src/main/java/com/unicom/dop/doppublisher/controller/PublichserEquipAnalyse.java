@@ -30,18 +30,18 @@ public class PublichserEquipAnalyse {
     //@GetMapping("/equip/analyse/{area_city}/{grid_name}/{profession}/{equip_status_new}/{dt_month}")
     @GetMapping("/equip/analyse/getAllEquip")
 //    public String getDauEquipPlanAnalyse(@PathVariable("area_city") String area_city, @PathVariable("grid_name") String grid_name, @PathVariable("profession") String profession2, @PathVariable("equip_status_new") String equip_status_new, @PathVariable("dt_month") String dt_month) {
-    public Result getDauEquipPlanAnalyse(@RequestParam(value = "planNum",required = false) String planNum,
-                                         @RequestParam(value = "areaCity",required = false) String areaCity,
-                                         @RequestParam(value = "gridName",required = false) String gridName,
-                                         @RequestParam(value = "profession",required = false) String profession,
-                                         @RequestParam(value = "equipStatusNew",required = false) String equipStatusNew,
+    public Result getDauEquipPlanAnalyse(@RequestParam(value = "planNum", required = false) String planNum,
+                                         @RequestParam(value = "areaCity", required = false) String areaCity,
+                                         @RequestParam(value = "gridName", required = false) String gridName,
+                                         @RequestParam(value = "profession", required = false) String profession,
+                                         @RequestParam(value = "equipStatusNew", required = false) String equipStatusNew,
                                          @RequestParam(name = "planYear", required = false) String planYear,
                                          @RequestParam(name = "planMonth", required = false) String planMonth,
                                          @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                          @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
 //        List<Map> equipPlanAnalyse = publisherService.getEquipPlanAnalyse(area_city, grid_name, profession2, equip_status_new, dt_month);
-        return publisherService.getEquipPlanAnalyse(planNum,areaCity, gridName, profession, equipStatusNew, planYear,planMonth, pageNo, pageSize);
+        return publisherService.getEquipPlanAnalyse(planNum, areaCity, gridName, profession, equipStatusNew, planYear, planMonth, pageNo, pageSize);
 //        JSONObject jsonObject=new JSONObject();
 //        ArrayList<Map> tmpArr = new ArrayList<>();
 //        Iterator<Map> iterator = equipPlanAnalyse.iterator();
@@ -153,11 +153,12 @@ public class PublichserEquipAnalyse {
     }
 
 
-    @GetMapping("/equip/analyse/detail/{neName}")
+    //    @GetMapping("/equip/analyse/detail/{neName}")
+    @GetMapping("/equip/analyse/detail")
 //    public String getDauEquipPlanAnalyseDetail(@PathVariable("neName") String neName2) {
-    public Result getDauEquipPlanAnalyseDetail(@PathVariable("neName") String neName2) {
+    public Result getDauEquipPlanAnalyseDetail(@RequestParam("neName") String neName) {
 
-        return publisherService.getEquipPlanAnalyseDetial(neName2);
+        return publisherService.getEquipPlanAnalyseDetial(neName);
 //        List<Map> equipPlanAnalyseDetial = publisherService.getEquipPlanAnalyseDetial(neName2);
 //        ArrayList<Map> tmpArr = new ArrayList<>();
 //        Iterator<Map> iterator = equipPlanAnalyseDetial.iterator();
@@ -402,9 +403,52 @@ public class PublichserEquipAnalyse {
         return publisherService.deleteAllPlan(jsonObject);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public Result selectTaskManagement(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        return publisherService.selectAllTask(pageNo, pageSize);
+//    @RequestMapping(value = "", method = RequestMethod.GET)
+//    public Result selectTaskManagement(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+//                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+//        return publisherService.selectAllTask(pageNo, pageSize);
+//    }
+
+    @RequestMapping(value = "/equip/backnet/updateAllPlan", method = RequestMethod.POST)
+    public Result updateAllPlan(@RequestBody JSONObject jsonObject) {
+        return publisherService.updateAllPlan(jsonObject);
+    }
+
+    /**
+     * 退网任务详情，顶部数据
+     * @param areaCity
+     * @param gridName
+     * @param profession
+     * @param planYear
+     * @param planMonth
+     * @return
+     */
+    @RequestMapping(value = "/equip/analyse/getNumberData", method = RequestMethod.GET)
+    public Result getNumberData(@RequestParam(name = "areaCity", required = false) String areaCity,
+                                @RequestParam(name = "gridName", required = false) String gridName,
+                                @RequestParam(name = "profession", required = false) String profession,
+                                @RequestParam(name = "planYear", required = false) String planYear,
+                                @RequestParam(name = "planMonth", required = false) String planMonth) {
+        return publisherService.getNumberData(areaCity, gridName, profession, planYear, planMonth);
+    }
+
+    /**
+     * 退网作业计划监控
+     * @param planYear
+     * @return
+     */
+    @RequestMapping(value = "equip/analyse/planMonitoring",method = RequestMethod.GET)
+    public Result planMonitoring(@RequestParam(name = "planYear", required = false) String planYear){
+        return publisherService.planMonitoring(planYear);
+    }
+
+    /**
+     * 地市退网作业对标
+     * @param planYear
+     * @return
+     */
+    @RequestMapping(value = "equip/analyse/planArea",method = RequestMethod.GET)
+    public Result planArea(@RequestParam(name = "planYear", required = false) String planYear){
+        return publisherService.planArea(planYear);
     }
 }

@@ -31,9 +31,7 @@ public interface DauEquipMapper {
                                          @Param("flag")Integer flag);
 
     public List<Map> getEquipPlanAnalyseDetial(@Param("neName") String neName);
-//    public List<Map> getEquipPlanAnalyseDetial(@Param("neName") String neName,
-//                                               @Param("pageNo")Integer pageNo,
-//                                               @Param("pageSize")Integer pageSize);
+
 
 
     Integer getEquipPlanAnalyseCount(@Param("planNum") String planNum,
@@ -45,5 +43,5 @@ public interface DauEquipMapper {
                                      @Param("planMonth") String planMonth,
                                      @Param("flag")Integer flag);
 
-    Integer getEquipPlanAnalyseDetialCount(@Param("neName")String neName);
+//    Integer getEquipPlanAnalyseDetialCount(@Param("neName")String neName);
 }

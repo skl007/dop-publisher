@@ -43,4 +43,12 @@ public interface PublisherService {
     Result deleteAllPlan(JSONObject jsonObject);
 
     Result selectAllTask(Integer pageNo,Integer pageSize);
+
+    Result updateAllPlan(JSONObject jsonObject);
+
+    Result getNumberData(String areaCity, String gridName, String profession, String planYear,String planMonth);
+
+    Result planMonitoring(String planYear);
+
+    Result planArea(String planYear);
 }
