@@ -393,8 +393,8 @@ public class PublisherServiceImpl implements PublisherService {
             model.put("网管功耗读数", powerNumber);
             model.put("计划退网时间", planBacknetTime);
             model.put("实际退网时间", realBacknetTime);
-//            model.put("稽核系统设备状态", logtype);
-//            model.put("资源系统设备状态", status);
+            model.put("稽核系统设备状态", logtype);
+            model.put("资源系统设备状态", status);
             model.put("退网设备状态", equipStatusNew);
             model.put("实际年度节省成本", realSaveCosts);
             model.put("实际年度节省维保费", saveMoney);
