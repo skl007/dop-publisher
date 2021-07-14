@@ -42,7 +42,7 @@ public interface PublisherService {
 
     Result deleteAllPlan(JSONObject jsonObject);
 
-    Result selectAllTask(Integer pageNo,Integer pageSize);
+
 
     Result updateAllPlan(JSONObject jsonObject);
 

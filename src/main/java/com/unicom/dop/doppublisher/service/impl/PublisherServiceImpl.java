@@ -8,7 +8,6 @@ import com.unicom.dop.doppublisher.common.Result;
 import com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlan;
 import com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanIndex;
 import com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest;
-import com.unicom.dop.doppublisher.entity.OdsBacknetTaskManagement;
 import com.unicom.dop.doppublisher.mapper.*;
 
 import com.unicom.dop.doppublisher.service.PublisherService;
@@ -34,8 +33,7 @@ public class PublisherServiceImpl implements PublisherService {
     private OdsBacknetEquipPlanTestMapper odsBacknetEquipPlanTestMapper;
     @Autowired
     private OdsBacknetEquipPlanIndexMapper odsBacknetEquipPlanIndexMapper;
-    @Autowired
-    private OdsBacknetTaskManagementMapper odsBacknetTaskManagementMapper;
+
 
 
     @Override
@@ -615,19 +613,6 @@ public class PublisherServiceImpl implements PublisherService {
         }
     }
 
-    /**
-     * 获取所有退网任务计划管理
-     * @return
-     */
-    @Override
-    public Result selectAllTask(Integer pageNo,Integer pageSize) {
-        JSONObject jsonObject=new JSONObject();
-       List<Map> list= odsBacknetTaskManagementMapper.selectAll(pageNo,pageSize);
-       Integer total=odsBacknetTaskManagementMapper.selectAllCount();
-       jsonObject.put("list",list);
-       jsonObject.put("total",total);
-        return Result.ok(jsonObject);
-    }
 
     /**
      * 批量修改退网计划信息
