@@ -35,7 +35,6 @@ public class PublisherServiceImpl implements PublisherService {
     private OdsBacknetEquipPlanIndexMapper odsBacknetEquipPlanIndexMapper;
 
 
-
     @Override
     public List<Map> getNationalTaskCount() {
         return dauEquipMapper.getNationalTaskCount();
@@ -43,9 +42,9 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
 //    public List<Map> getEquipPlanAnalyse(String area_city, String grid_name, String profession, String equip_status_new, String dt_month) {
-    public Result getEquipPlanAnalyse(String planNum,String areaCity,
+    public Result getEquipPlanAnalyse(String planNum, String areaCity,
                                       String gridName, String profession,
-                                      String equipStatusNew,String planYear,String planMonth,
+                                      String equipStatusNew, String planYear, String planMonth,
                                       Integer pageNo,
                                       Integer pageSize) {
 
@@ -57,14 +56,14 @@ public class PublisherServiceImpl implements PublisherService {
 //        if (oConvertUtils.isEmpty(pageSize) || pageSize == 0) {
 //            pageSize = 10;
 //        }
-        int flag=0;
-        if (oConvertUtils.isNotEmpty(planMonth)){
-            flag=1;
-        }else if (oConvertUtils.isNotEmpty(planYear)){
-            flag=2;
+        int flag = 0;
+        if (oConvertUtils.isNotEmpty(planMonth)) {
+            flag = 1;
+        } else if (oConvertUtils.isNotEmpty(planYear)) {
+            flag = 2;
         }
-        List<Map> equipPlanAnalyse = dauEquipMapper.getEquipPlanAnalyse(planNum,areaCity, gridName, profession, equipStatusNew, planYear,planMonth, pageNo, pageSize,flag);
-        Integer total = dauEquipMapper.getEquipPlanAnalyseCount(planNum,areaCity, gridName, profession, equipStatusNew, planYear,planMonth,flag);
+        List<Map> equipPlanAnalyse = dauEquipMapper.getEquipPlanAnalyse(planNum, areaCity, gridName, profession, equipStatusNew, planYear, planMonth, pageNo, pageSize, flag);
+        Integer total = dauEquipMapper.getEquipPlanAnalyseCount(planNum, areaCity, gridName, profession, equipStatusNew, planYear, planMonth, flag);
         jsonObject.put("total", total);
         ArrayList<Map> tmpArr = new ArrayList<>();
         Iterator<Map> iterator = equipPlanAnalyse.iterator();
@@ -138,6 +137,11 @@ public class PublisherServiceImpl implements PublisherService {
             } else {
                 realBacknetTime = (String) obj.get("realBacknetTime");
             }
+            if (obj.get("equipStatusNew") == null) {
+                equipStatusNew = "";
+            } else {
+                equipStatusNew = (String) obj.get("equipStatusNew");
+            }
             if (obj.get("planSaveCosts") == null) {
                 planSaveCosts = "";
             } else {
@@ -170,10 +174,11 @@ public class PublisherServiceImpl implements PublisherService {
             model.put("网管系统退网时间", logdate);
             model.put("资源系统退网时间", orderTime);
             model.put("实际退网时间", realBacknetTime);
-            model.put("计划节省成本/元", planSaveCosts);
-            model.put("实际节省成本/元", realSaveCosts);
-            model.put("节省电费/元", realSaveElectricity);
-            model.put("节省维保费/元", saveMoney);
+            model.put("当前退网状态", equipStatusNew);
+            model.put("计划节省成本/万元", planSaveCosts);
+            model.put("实际节省成本/万元", realSaveCosts);
+            model.put("节省电费/万元", realSaveElectricity);
+            model.put("节省维保费/万元", saveMoney);
 
             tmpArr.add(model);
         }
@@ -375,8 +380,8 @@ public class PublisherServiceImpl implements PublisherService {
             model.put("网络层级", reslvl);
             model.put("退网类型", backnetType);
             model.put("设备厂家", equipFactory);
-            model.put("是否用户机房",isUserMachroom);
-            model.put("是否基站",isBs);
+            model.put("是否用户机房", isUserMachroom);
+            model.put("是否基站", isBs);
             model.put("网元类型", neType);
             model.put("网元名称", neName);
             model.put("退网原因", backnetReason);
@@ -450,9 +455,9 @@ public class PublisherServiceImpl implements PublisherService {
      */
     @Override
     public Result getBackNet(Integer pageNo, Integer pageSize,
-                             String planNum,String planName,
+                             String planNum, String planName,
                              String equipType,
-                             String equipFactory,String neName) {
+                             String equipFactory, String neName) {
 //   计划编号
         if (oConvertUtils.isEmpty(planNum)) {
             return Result.error("计划编号为空！");
@@ -462,8 +467,8 @@ public class PublisherServiceImpl implements PublisherService {
             return Result.error("计划名称为空！");
         }
         List<OdsBacknetEquipPlanTest> list = odsBacknetEquipPlanTestMapper.selectBackNetByPlanNumAndPlanName(planNum, planName,
-                pageNo, pageSize,equipType,equipFactory,neName);
-        Integer total = odsBacknetEquipPlanTestMapper.countAll(planNum, planName,equipType,equipFactory,neName);
+                pageNo, pageSize, equipType, equipFactory, neName);
+        Integer total = odsBacknetEquipPlanTestMapper.countAll(planNum, planName, equipType, equipFactory, neName);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("list", list);
         jsonObject.put("total", total);
@@ -533,7 +538,7 @@ public class PublisherServiceImpl implements PublisherService {
             return Result.error("计划编号不能为空！");
         }
 //        OdsBacknetEquipPlanIndex odsBacknetEquipPlanIndex = odsBacknetEquipPlanIndexMapper.selectByPrimaryKey(planNum);
-        Integer i = odsBacknetEquipPlanTestMapper.countAll(planNum, "","","","");
+        Integer i = odsBacknetEquipPlanTestMapper.countAll(planNum, "", "", "", "");
         if (oConvertUtils.isEmpty(i) || i == 0) {
             return Result.ok();
         }
@@ -552,19 +557,19 @@ public class PublisherServiceImpl implements PublisherService {
      */
     @Override
     public Result selectAllPlan(Integer pageNo, Integer pageSize,
-                                String planNum,String planName,
+                                String planNum, String planName,
                                 String areaCity, String profession,
-                                String planYear,String planMonth) {
+                                String planYear, String planMonth) {
         JSONObject jsonObject = new JSONObject();
-        int flag=0;
-        if (oConvertUtils.isNotEmpty(planMonth)){
-            flag=1;
-        }else if (oConvertUtils.isNotEmpty(planYear)){
-            flag=2;
+        int flag = 0;
+        if (oConvertUtils.isNotEmpty(planMonth)) {
+            flag = 1;
+        } else if (oConvertUtils.isNotEmpty(planYear)) {
+            flag = 2;
         }
-        List<Map<String, Object>> list = odsBacknetEquipPlanTestMapper.selectAllPlan(pageNo, pageSize, planNum,planName, areaCity, profession,planYear,planMonth,flag);
+        List<Map<String, Object>> list = odsBacknetEquipPlanTestMapper.selectAllPlan(pageNo, pageSize, planNum, planName, areaCity, profession, planYear, planMonth, flag);
         if (oConvertUtils.listIsNotEmpty(list)) {
-            Integer total = odsBacknetEquipPlanTestMapper.selectAllPlanCount(planNum,planName, areaCity, profession,planYear,planMonth,flag);
+            Integer total = odsBacknetEquipPlanTestMapper.selectAllPlanCount(planNum, planName, areaCity, profession, planYear, planMonth, flag);
             jsonObject.put("total", total);
         }
         jsonObject.put("list", list);
@@ -588,21 +593,24 @@ public class PublisherServiceImpl implements PublisherService {
             }
             //获取计划名称
             String planName = jsonObject.getString("planName");
-            if (oConvertUtils.isEmpty(planName)){
+            if (oConvertUtils.isEmpty(planName)) {
                 return Result.error("计划名称不存在");
             }
-            Integer backNetEquipNumber = jsonObject.getInteger("backNetEquipNumber");
-            if (oConvertUtils.isEmpty(backNetEquipNumber) || backNetEquipNumber == 0) {
-                return Result.error("删除失败");
-            }
+//            Integer backNetEquipNumber = jsonObject.getInteger("backNetEquipNumber");
+//            if (oConvertUtils.isEmpty(backNetEquipNumber) || backNetEquipNumber == 0) {
+//                return Result.error("删除失败");
+//            }
             Integer i1 = odsBacknetEquipPlanTestMapper.deleteByPlanNumAndPlanName(planNum, planName);
             Integer i2 = odsBacknetEquipPlanTestMapper.deleteDWDByPlanNumAndPlanName(planNum, planName);
 //            if (!i.equals(backNetEquipNumber)) {
-            if (!(i1.equals(backNetEquipNumber)&&i2.equals(backNetEquipNumber))) {
-                System.out.println("backNetEquipNumber==========="+backNetEquipNumber);
-                System.out.println("i1==========="+i1);
-                System.out.println("i2==========="+i2);
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+//            if (!(i1.equals(backNetEquipNumber)&&i2.equals(backNetEquipNumber))) {
+//                System.out.println("backNetEquipNumber==========="+backNetEquipNumber);
+//                System.out.println("i1==========="+i1);
+//                System.out.println("i2==========="+i2);
+//                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+//                return Result.error("删除失败！");
+//            }
+            if (i1 < 1 && i2 < 1) {
                 return Result.error("删除失败！");
             }
             return Result.ok("删除成功");
@@ -616,6 +624,7 @@ public class PublisherServiceImpl implements PublisherService {
 
     /**
      * 批量修改退网计划信息
+     *
      * @param jsonObject
      * @return
      */
@@ -639,12 +648,17 @@ public class PublisherServiceImpl implements PublisherService {
 //            if (oConvertUtils.isEmpty(planName)){
 //                return Result.error("计划名称不存在");
 //            }
-            Integer backNetEquipNumber = jsonObject.getInteger("backNetEquipNumber");
-            if (oConvertUtils.isEmpty(backNetEquipNumber) || backNetEquipNumber == 0) {
-                return Result.error("缺少参数，修改失败");
-            }
-          Integer i= odsBacknetEquipPlanTestMapper.updateByPlanNumAndPlanName(planNum,nPlanNum,nPlanName,nPlanTime);
-            if (!i.equals(backNetEquipNumber)){
+//            Integer backNetEquipNumber = jsonObject.getInteger("backNetEquipNumber");
+//            System.out.println("backNetEquipNumber======" + backNetEquipNumber);
+//            if (oConvertUtils.isEmpty(backNetEquipNumber) || backNetEquipNumber == 0) {
+//                return Result.error("缺少参数，修改失败");
+//            }
+            Integer i = odsBacknetEquipPlanTestMapper.updateByPlanNumAndPlanName(planNum, nPlanNum, nPlanName, nPlanTime);
+            System.out.println("i=======" + i);
+//            if (!i.equals(backNetEquipNumber)) {
+//                return Result.error("修改失败，请重试！");
+//            }
+            if (i < 1) {
                 return Result.error("修改失败，请重试！");
             }
             return Result.ok("修改成功");
@@ -656,32 +670,32 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public Result getNumberData(String areaCity, String gridName, String profession, String planYear,String planMonth) {
-        int flag=0;
-        if (oConvertUtils.isNotEmpty(planMonth)){
-            flag=1;
-        }else if (oConvertUtils.isNotEmpty(planYear)){
-            flag=2;
+    public Result getNumberData(String areaCity, String gridName, String profession, String planYear, String planMonth) {
+        int flag = 0;
+        if (oConvertUtils.isNotEmpty(planMonth)) {
+            flag = 1;
+        } else if (oConvertUtils.isNotEmpty(planYear)) {
+            flag = 2;
         }
-       List<Map> list= odsBacknetEquipPlanTestMapper.getNumberData(areaCity,gridName,profession,planYear,planMonth,flag);
+        List<Map> list = odsBacknetEquipPlanTestMapper.getNumberData(areaCity, gridName, profession, planYear, planMonth, flag);
         return Result.ok(list);
     }
 
     @Override
     public Result planMonitoring(String planYear) {
-        if (oConvertUtils.isEmpty(planYear)){
-            planYear= String.valueOf(LocalDate.now().getYear());
+        if (oConvertUtils.isEmpty(planYear)) {
+            planYear = String.valueOf(LocalDate.now().getYear());
         }
-       List<Map> list= odsBacknetEquipPlanTestMapper.planMonitoring(planYear);
+        List<Map> list = odsBacknetEquipPlanTestMapper.planMonitoring(planYear);
         return Result.ok(list);
     }
 
     @Override
     public Result planArea(String planYear) {
-        if (oConvertUtils.isEmpty(planYear)){
-            planYear= String.valueOf(LocalDate.now().getYear());
+        if (oConvertUtils.isEmpty(planYear)) {
+            planYear = String.valueOf(LocalDate.now().getYear());
         }
-        List<Map> list= odsBacknetEquipPlanTestMapper.planArea(planYear);
+        List<Map> list = odsBacknetEquipPlanTestMapper.planArea(planYear);
         return Result.ok(list);
     }
 }

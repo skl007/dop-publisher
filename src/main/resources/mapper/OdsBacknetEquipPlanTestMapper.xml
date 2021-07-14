@@ -193,7 +193,7 @@
         plan_num,
         COUNT(*) backnet_eqp_num,
         ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
-        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000)/10000,2)
         plan_save_costs
         FROM dwd_backnet_equip_analyse_test
         where 1=1
@@ -230,61 +230,6 @@
         </if>
         ORDER BY t3.area_city,t3.plan_time DESC
         LIMIT ${(pageNo-1)*pageSize},${pageSize}
-        <!--        select-->
-        <!--        t1.plan_num as planNum,-->
-        <!--        plan_name planName,-->
-        <!--        plan_time planTime,-->
-        <!--        area_city areaCity,-->
-        <!--        profession,-->
-        <!--        backnet_eqp_num as backNetEquipNumber,-->
-        <!--        plan_save_costs as planSaveCosts-->
-        <!--        from (-->
-        <!--        SELECT-->
-        <!--        plan_num,-->
-        <!--        plan_name,-->
-        <!--        plan_time,-->
-        <!--        area_city,-->
-        <!--        COUNT(*) backnet_eqp_num,-->
-        <!--        ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*-->
-        <!--        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)-->
-        <!--        plan_save_costs-->
-        <!--        FROM dwd_backnet_equip_analyse_test-->
-        <!--        &#45;&#45; where plan_time > '2021-00' and '2021-13' > plan_time-->
-        <!--        where 1=1-->
-        <!--        <if test="flag==1">-->
-        <!--            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})-->
-        <!--        </if>-->
-        <!--        <if test="flag==2">-->
-        <!--            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')-->
-        <!--        </if>-->
-        <!--        GROUP BY plan_num, plan_name,area_city) t1-->
-        <!--        LEFT JOIN (-->
-        <!--        select plan_num,profession-->
-        <!--        from dwd_backnet_equip_analyse_test-->
-        <!--        where profession is not NULL-->
-        <!--        &#45;&#45; and plan_time > '2021-00' and '2021-13' > plan_time-->
-        <!--        <if test="flag==1">-->
-        <!--            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})-->
-        <!--        </if>-->
-        <!--        <if test="flag==2">-->
-        <!--            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')-->
-        <!--        </if>-->
-        <!--        GROUP BY plan_num, plan_name,area_city) t2 on t1.plan_num = t2.plan_num-->
-        <!--        WHERE 1=1-->
-        <!--        <if test="planNum !=null and planNum !=''">-->
-        <!--            and t1.plan_num LIKE concat('%',#{planNum},'%')-->
-        <!--        </if>-->
-        <!--        <if test="planName !=null and planName !=''">-->
-        <!--            AND t1.plan_name LIKE concat('%',#{planName},'%')-->
-        <!--        </if>-->
-        <!--        <if test="areaCity !=null and areaCity !=''">-->
-        <!--            AND t1.area_city=#{areaCity}-->
-        <!--        </if>-->
-        <!--        <if test="profession !=null and profession !=''">-->
-        <!--            AND t2.profession=#{profession}-->
-        <!--        </if>-->
-        <!--        ORDER BY t1.plan_time,t1.plan_name,t1.area_city DESC-->
-        <!--        LIMIT ${(pageNo-1)*pageSize},${pageSize}-->
     </select>
     <select id="selectAllPlanCount" resultType="java.lang.Integer">
         select count(1) from (select
@@ -303,7 +248,7 @@
         area_city,
         COUNT(*) backnet_eqp_num,
         ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
-        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(NOW()),'-12-31'),plan_backnet_time)/1000),2) plan_save_costs
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(NOW()),'-12-31'),plan_backnet_time)/1000)/10000,2) plan_save_costs
         FROM dwd_backnet_equip_analyse_test
         where 1=1
         <if test="flag==1">
@@ -354,7 +299,7 @@
         SELECT
             count(*) eqp_num, -- 设备总量
             ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation ,0)*24*1.1*
-            IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2)
+            IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000)/10000,2)
             plan_save_costs, -- 预计压降成本
             '0' common
         from dwd_backnet_equip_analyse_test
@@ -366,7 +311,7 @@
             and profession=#{profession}
         </if>
         <if test="gridName !=null and gridName !=''">
-            and grid_name=#{gridName}
+            and grid_name LIKE concat('%',#{gridName},'%')
         </if>
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -404,7 +349,7 @@
             and profession=#{profession}
         </if>
         <if test="gridName !=null and gridName !=''">
-            and grid_name=#{gridName}
+            and grid_name LIKE concat('%',#{gridName},'%')
         </if>
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -427,7 +372,7 @@
             and profession=#{profession}
         </if>
         <if test="gridName !=null and gridName !=''">
-            and grid_name=#{gridName}
+            and grid_name LIKE concat('%',#{gridName},'%')
         </if>
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -450,7 +395,7 @@
             and profession=#{profession}
         </if>
         <if test="gridName !=null and gridName !=''">
-            and grid_name=#{gridName}
+            and grid_name LIKE concat('%',#{gridName},'%')
         </if>
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -473,7 +418,7 @@
             and profession=#{profession}
         </if>
         <if test="gridName !=null and gridName !=''">
-            and grid_name=#{gridName}
+            and grid_name LIKE concat('%',#{gridName},'%')
         </if>
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -496,7 +441,7 @@
             and profession=#{profession}
         </if>
         <if test="gridName !=null and gridName !=''">
-            and grid_name=#{gridName}
+            and grid_name LIKE concat('%',#{gridName},'%')
         </if>
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -520,7 +465,7 @@
         select
             plan_time,
             COUNT(*) plan_backnet_num,
-            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2) plan_save_costs
+            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000)/10000,2) plan_save_costs
         from dwd_backnet_equip_analyse_test
         where 1=1
         and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
@@ -530,7 +475,7 @@
         select
             plan_time,
             COUNT(*) real_backnet_num,
-            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000),2) real_save_costs
+            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000)/10000,2) real_save_costs
         from dwd_backnet_equip_analyse_test
         where 1=1
         and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
@@ -550,7 +495,7 @@
         select
             area_city,
             COUNT(*) plan_backnet_num,
-            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000),2) plan_save_costs
+            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000)/10000,2) plan_save_costs
         from dwd_backnet_equip_analyse_test
         where
          plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
@@ -559,7 +504,7 @@
         select
             area_city,
             COUNT(*) real_backnet_num,
-            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000),2) real_save_costs
+            ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000)/10000,2) real_save_costs
         from dwd_backnet_equip_analyse_test
         where
          plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
