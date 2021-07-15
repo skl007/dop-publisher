@@ -165,10 +165,15 @@ SELECT
    ELSE '' END AS is_invest, -- 是否需要投资
     power_number,-- 网管功耗读数
     plan_backnet_time , -- 计划退网时间
+    logdate,-- 综合网管同步稽核时间(网管系统退网时间)
+    order_time,-- 资源系统状态变更时间(资源系统退网时间)
     real_backnet_time, -- 实际退网时间
     logtype, -- 稽核系统设备状态
     `STATUS`,  -- 资源系统设备状态
-    equip_status_new, -- 退网设备状态
+    equip_status_new, -- 实际退网状态
+    CASE WHEN (equip_status_new = '已退网' AND `STATUS` = '资源清除') THEN '报废'
+    WHEN (equip_status_new = '已退网' AND `STATUS` = '备件/空闲') THEN '转备'
+    ELSE '' END real_equip_status,-- 退网设备状态
     IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000/10000 real_save_costs, -- 实际年度节省成本
     save_money,  -- 实际年度节省维保费
     IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000/10000 real_save_electricity -- 实际年度节省电费
@@ -204,10 +209,13 @@ SELECT
         <result column="is_invest" property="isInvest"></result>
         <result column="power_number" property="powerNumber"></result>
         <result column="plan_backnet_time" property="planBacknetTime"></result>
+        <result column="logdate" property="logDate"></result>
+        <result column="order_time" property="orderTime"></result>
         <result column="real_backnet_time" property="realBacknetTime"></result>
-<!--        <result column="logtype" property="logtype"></result>-->
-<!--        <result column="STATUS" property="status"></result>-->
+        <result column="logtype" property="logtype"></result>
+        <result column="STATUS" property="status"></result>
         <result column="equip_status_new" property="equipStatusNew"></result>
+        <result column="real_equip_status" property="realEquipStatus"></result>
         <result column="real_save_costs" property="realSaveCosts"></result>
         <result column="save_money" property="saveMoney"></result>
         <result column="real_save_electricity" property="realSaveElectricity"></result>

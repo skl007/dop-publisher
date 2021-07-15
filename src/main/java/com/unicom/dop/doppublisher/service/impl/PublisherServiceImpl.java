@@ -220,10 +220,13 @@ public class PublisherServiceImpl implements PublisherService {
             Object isInvest;
             Object powerNumber;
             Object planBacknetTime;
+            Object logDate;
+            Object orderTime;
             Object realBacknetTime;
             Object logtype;
             Object status;
             Object equipStatusNew;
+            Object realEquipStatus;
             Object realSaveCosts;
             Object saveMoney;
             Object realSaveElectricity;
@@ -334,6 +337,16 @@ public class PublisherServiceImpl implements PublisherService {
             } else {
                 planBacknetTime = (String) obj.get("planBacknetTime");
             }
+            if (obj.get("logDate") == null) {
+                logDate = "";
+            } else {
+                logDate = (String) obj.get("logDate");
+            }
+            if (obj.get("orderTime") == null) {
+                orderTime = "";
+            } else {
+                orderTime = (String) obj.get("orderTime");
+            }
             if (obj.get("realBacknetTime") == null) {
                 realBacknetTime = "";
             } else {
@@ -353,6 +366,11 @@ public class PublisherServiceImpl implements PublisherService {
                 equipStatusNew = "";
             } else {
                 equipStatusNew = (String) obj.get("equipStatusNew");
+            }
+            if (obj.get("realEquipStatus") == null) {
+                realEquipStatus = "";
+            } else {
+                realEquipStatus = (String) obj.get("realEquipStatus");
             }
             if (obj.get("realSaveCosts") == null) {
                 realSaveCosts = "";
@@ -392,10 +410,13 @@ public class PublisherServiceImpl implements PublisherService {
             model.put("是否需要投资", isInvest);
             model.put("网管功耗读数", powerNumber);
             model.put("计划退网时间", planBacknetTime);
+            model.put("网管系统退网时间", logDate);
+            model.put("资源系统退网时间", orderTime);
             model.put("实际退网时间", realBacknetTime);
-            model.put("稽核系统设备状态", logtype);
+            model.put("网管系统退网状态", logtype);
             model.put("资源系统设备状态", status);
-            model.put("退网设备状态", equipStatusNew);
+            model.put("实际退网状态", equipStatusNew);
+            model.put("退网设备状态", realEquipStatus);
             model.put("实际年度节省成本", realSaveCosts);
             model.put("实际年度节省维保费", saveMoney);
             model.put("实际年度节省电费", realSaveElectricity);
