@@ -3,13 +3,22 @@ package com.unicom.dop.doppublisher.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.unicom.dop.doppublisher.common.Result;
+import com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest;
 import com.unicom.dop.doppublisher.service.PublisherService;
+import com.unicom.dop.doppublisher.util.ExportXls;
 import org.apache.ibatis.annotations.Param;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -35,13 +44,14 @@ public class PublichserEquipAnalyse {
                                          @RequestParam(value = "gridName", required = false) String gridName,
                                          @RequestParam(value = "profession", required = false) String profession,
                                          @RequestParam(value = "equipStatusNew", required = false) String equipStatusNew,
+                                         @RequestParam(value = "neName", required = false) String neName,
                                          @RequestParam(name = "planYear", required = false) String planYear,
                                          @RequestParam(name = "planMonth", required = false) String planMonth,
                                          @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                          @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
 //        List<Map> equipPlanAnalyse = publisherService.getEquipPlanAnalyse(area_city, grid_name, profession2, equip_status_new, dt_month);
-        return publisherService.getEquipPlanAnalyse(planNum, areaCity, gridName, profession, equipStatusNew, planYear, planMonth, pageNo, pageSize);
+        return publisherService.getEquipPlanAnalyse(planNum, areaCity, gridName, profession, equipStatusNew, planYear, planMonth, pageNo, pageSize,neName);
 //        JSONObject jsonObject=new JSONObject();
 //        ArrayList<Map> tmpArr = new ArrayList<>();
 //        Iterator<Map> iterator = equipPlanAnalyse.iterator();
@@ -156,9 +166,11 @@ public class PublichserEquipAnalyse {
     //    @GetMapping("/equip/analyse/detail/{neName}")
     @GetMapping("/equip/analyse/detail")
 //    public String getDauEquipPlanAnalyseDetail(@PathVariable("neName") String neName2) {
-    public Result getDauEquipPlanAnalyseDetail(@RequestParam("neName") String neName) {
+    public Result getDauEquipPlanAnalyseDetail(@RequestParam(value = "neName",required = false) String neName,
+                                               @RequestParam(value = "eqpSid",required = false) String eqpSid,
+                                               @RequestParam(value = "areaCity",required = false) String areaCity) {
 
-        return publisherService.getEquipPlanAnalyseDetial(neName);
+        return publisherService.getEquipPlanAnalyseDetial(neName,eqpSid,areaCity);
 //        List<Map> equipPlanAnalyseDetial = publisherService.getEquipPlanAnalyseDetial(neName2);
 //        ArrayList<Map> tmpArr = new ArrayList<>();
 //        Iterator<Map> iterator = equipPlanAnalyseDetial.iterator();
@@ -416,6 +428,7 @@ public class PublichserEquipAnalyse {
 
     /**
      * 退网任务详情，顶部数据
+     *
      * @param areaCity
      * @param gridName
      * @param profession
@@ -434,21 +447,37 @@ public class PublichserEquipAnalyse {
 
     /**
      * 退网作业计划监控
+     *
      * @param planYear
      * @return
      */
-    @RequestMapping(value = "equip/analyse/planMonitoring",method = RequestMethod.GET)
-    public Result planMonitoring(@RequestParam(name = "planYear", required = false) String planYear){
+    @RequestMapping(value = "equip/analyse/planMonitoring", method = RequestMethod.GET)
+    public Result planMonitoring(@RequestParam(name = "planYear", required = false) String planYear) {
         return publisherService.planMonitoring(planYear);
     }
 
     /**
      * 地市退网作业对标
+     *
      * @param planYear
      * @return
      */
-    @RequestMapping(value = "equip/analyse/planArea",method = RequestMethod.GET)
-    public Result planArea(@RequestParam(name = "planYear", required = false) String planYear){
+    @RequestMapping(value = "equip/analyse/planArea", method = RequestMethod.GET)
+    public Result planArea(@RequestParam(name = "planYear", required = false) String planYear) {
         return publisherService.planArea(planYear);
     }
+
+    @RequestMapping(value = "equip/analyse/importBackNetExcel", method = RequestMethod.POST)
+    public Result importBackNetExcel(HttpServletRequest request, HttpServletResponse response) {
+        List<OdsBacknetEquipPlanTest> list = ExportXls.importExcel(request, OdsBacknetEquipPlanTest.class);
+//        String planNum = request.getParameter("planNum");
+//        String planName = request.getParameter("planName");
+//        String planTime = request.getParameter("planTime");
+//        return publisherService.importBackNetExcel(planNum,planName,planTime,list);
+        return publisherService.importBackNetExcel(list);
+    }
+
+
+
+
 }

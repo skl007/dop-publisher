@@ -28,9 +28,12 @@ public interface DauEquipMapper {
                                          @Param("planMonth") String planMonth,
                                          @Param("pageNo")Integer pageNo,
                                          @Param("pageSize")Integer pageSize,
-                                         @Param("flag")Integer flag);
+                                         @Param("flag")Integer flag,
+                                         @Param("neName")String neName);
 
-    public List<Map> getEquipPlanAnalyseDetial(@Param("neName") String neName);
+    public List<Map> getEquipPlanAnalyseDetial(@Param("neName") String neName,
+                                               @Param("eqpSid") String eqpSid,
+                                               @Param("areaCity") String areaCity);
 
 
 
@@ -41,7 +44,8 @@ public interface DauEquipMapper {
                                      @Param("equipStatusNew") String equipStatusNew,
                                      @Param("planYear") String planYear,
                                      @Param("planMonth") String planMonth,
-                                     @Param("flag")Integer flag);
+                                     @Param("flag")Integer flag,
+                                     @Param("neName")String neName);
 
 //    Integer getEquipPlanAnalyseDetialCount(@Param("neName")String neName);
 }

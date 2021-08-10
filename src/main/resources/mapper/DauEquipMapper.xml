@@ -34,16 +34,18 @@
         real_backnet_time, -- 实际退网时间
         equip_status_new,-- 退网状态
         ROUND(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
-        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000/10000,2)
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000)
         plan_save_costs, -- 计划节省成本(因没有电费单价,待完善*electricity_price)
         ROUND(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
-        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000/10000,2)
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000)
         real_save_costs, -- 实际节省成本
         ROUND(IFNULL(power_dissipation,0) *24*1.1*
-        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000/10000,2)
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000)
         real_save_electricity, -- 节省电费
-        save_money -- 节省维保费
-        FROM dwd_backnet_equip_analyse_test
+        -- save_money -- 节省维保费
+        ROUND(IFNULL(save_money,0)), -- 节省维保费
+        eqp_sid -- 网元sid
+        FROM dwd_backnet_equip_analyse
         WHERE 1=1
         <if test="planNum !=null and planNum !=''">
             and plan_num LIKE concat('%',#{planNum},'%')
@@ -65,6 +67,9 @@
         </if>
         <if test="flag==2">
             and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+        <if test="neName !=null and neName !=''">
+            and neName LIKE concat('%',#{neName},'%')
         </if>
         ORDER BY plan_backnet_time,area_city,neName DESC
         LIMIT ${(pageNo-1)*pageSize},${pageSize}
@@ -85,11 +90,12 @@
         <result column="real_save_costs" property="realSaveCosts"></result>
         <result column="real_save_electricity" property="realSaveElectricity"></result>
         <result column="save_money" property="saveMoney"></result>
+        <result column="eqp_sid" property="eqpSid"></result>
     </resultMap>
     <select id="getEquipPlanAnalyseCount" resultType="java.lang.Integer">
         SELECT
         count(*) as total
-        FROM dwd_backnet_equip_analyse_test
+        FROM dwd_backnet_equip_analyse
         WHERE 1=1
         <if test="planNum !=null and planNum !=''">
             and plan_num LIKE concat('%',#{planNum},'%')
@@ -111,6 +117,9 @@
         </if>
         <if test="flag==2">
             and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
+        <if test="neName !=null and neName !=''">
+            and neName LIKE concat('%',#{neName},'%')
         </if>
     </select>
 
@@ -132,63 +141,75 @@
 
     <!-- -->
     <select id="getEquipPlanAnalyseDetial" resultMap="equipPlanAnalyseDetial">
-SELECT
-    plan_num, -- 计划编号
-    area_city, -- 地市
-    grid_name, -- 设备所在网格
-    profession, -- 专业
-    room_sname, -- 设备所在机房
-    eqp_type,-- 设备类型
-    reslvl,  -- 网络层级
-    backnet_type, -- 退网类型
-    equip_factory, -- 设备厂家
-    CASE is_user_machroom WHEN 0 THEN '否'
-    WHEN 1 THEN '是'
-    ELSE ''
-     END AS is_user_machroom,-- 是否用户机房：0否
-   CASE is_bs WHEN 0 THEN '否'
-   WHEN 1 THEN '是'
-   ELSE '' END AS is_bs, -- 是否基站
-    ne_type, -- 网元类型
-    neName, -- 网元名称
-    backnet_reason, -- 退网原因
-    net_time, -- 网管上网元创建时间
-   CASE is_buy_maintenance WHEN 0 THEN '否'
-   WHEN 1 THEN '是'
-   ELSE '' END AS is_buy_maintenance,-- 是否购买维保
-   CASE is_used WHEN 0 THEN '否'
-   WHEN 1 THEN '是'
-   ELSE '' END AS is_used, -- 是否要利旧
-    eqp_sid_rated_power,-- 标称功率
-   CASE is_invest WHEN 0 THEN '否'
-   WHEN 1 THEN '是'
-   ELSE '' END AS is_invest, -- 是否需要投资
-    power_number,-- 网管功耗读数
-    plan_backnet_time , -- 计划退网时间
-    logdate,-- 综合网管同步稽核时间(网管系统退网时间)
-    order_time,-- 资源系统状态变更时间(资源系统退网时间)
-    real_backnet_time, -- 实际退网时间
-    logtype, -- 稽核系统设备状态
-    `STATUS`,  -- 资源系统设备状态
-    equip_status_new, -- 实际退网状态
-    CASE WHEN (equip_status_new = '已退网' AND `STATUS` = '资源清除') THEN '报废'
-    WHEN (equip_status_new = '已退网' AND `STATUS` = '备件/空闲') THEN '转备'
-    ELSE '' END real_equip_status,-- 退网设备状态
-    IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000/10000 real_save_costs, -- 实际年度节省成本
-    save_money,  -- 实际年度节省维保费
-    IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000/10000 real_save_electricity -- 实际年度节省电费
-    FROM dwd_backnet_equip_analyse_test t
- WHERE neName = #{neName}
+        SELECT
+        plan_num, -- 计划编号
+        plan_name,-- 计划名称
+        area_city, -- 地市
+        grid_name, -- 设备所在网格
+        profession, -- 专业
+        room_sname, -- 设备所在机房
+        eqp_type,-- 设备类型
+        reslvl, -- 网络层级
+        backnet_type, -- 退网类型
+        equip_factory, -- 设备厂家
+        CASE is_user_machroom WHEN 0 THEN '否'
+        WHEN 1 THEN '是'
+        ELSE ''
+        END AS is_user_machroom,-- 是否用户机房：0否
+        CASE is_bs WHEN 0 THEN '否'
+        WHEN 1 THEN '是'
+        ELSE '' END AS is_bs, -- 是否基站
+        ne_type, -- 网元类型
+        neName, -- 网元名称
+        backnet_reason, -- 退网原因
+        net_time, -- 网管上网元创建时间
+        CASE is_buy_maintenance WHEN 0 THEN '否'
+        WHEN 1 THEN '是'
+        ELSE '' END AS is_buy_maintenance,-- 是否购买维保
+        CASE is_used WHEN 0 THEN '否'
+        WHEN 1 THEN '是'
+        ELSE '' END AS is_used, -- 是否要利旧
+        eqp_sid_rated_power,-- 标称功率
+        CASE is_invest WHEN 0 THEN '否'
+        WHEN 1 THEN '是'
+        ELSE '' END AS is_invest, -- 是否需要投资
+        power_number,-- 网管功耗读数
+        plan_backnet_time , -- 计划退网时间
+        logdate,-- 综合网管同步稽核时间(网管系统退网时间)
+        order_time,-- 资源系统状态变更时间(资源系统退网时间)
+        real_backnet_time, -- 实际退网时间
+        logtype, -- 稽核系统设备状态
+        `STATUS`, -- 资源系统设备状态
+        equip_status_new, -- 实际退网状态
+        CASE WHEN (equip_status_new = '已退网' AND `STATUS` = '资源清除') THEN '报废'
+        WHEN (equip_status_new = '已退网' AND `STATUS` = '备件/空闲') THEN '转备'
+        ELSE '' END real_equip_status,-- 退网设备状态
+        ROUND(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000)
+        real_save_costs, -- 实际年度节省成本
+        ROUND(IFNULL(save_money,0)), -- 实际年度节省维保费
+        ROUND(IFNULL(power_dissipation,0) *24*1.1*
+        IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000)
+        real_save_electricity -- 实际年度节省电费
+        FROM dwd_backnet_equip_analyse t
+        WHERE 1=1
+        <if test="eqpSid !=null and eqpSid !=''">
+            and eqp_sid=#{eqpSid}
+        </if>
+        <if test="neName !=null and neName !='' and areaCity !=null and areaCity !=''">
+            and neName = #{neName} and area_city=#{areaCity}
+        </if>
     </select>
     <!--    <select id="getEquipPlanAnalyseDetialCount" resultType="java.lang.Integer">-->
     <!--         SELECT-->
     <!--           count(1)-->
-    <!--        FROM dwd_backnet_equip_analyse_test t-->
+    <!--        FROM dwd_backnet_equip_analyse t-->
     <!--        where neName = #{neName}-->
     <!--    </select>-->
 
     <resultMap id="equipPlanAnalyseDetial" type="java.util.Map">
         <result column="plan_num" property="planNum"></result>
+        <result column="plan_name" property="planName"></result>
         <result column="area_city" property="areaCity"></result>
         <result column="grid_name" property="gridName"></result>
         <result column="profession" property="profession"></result>

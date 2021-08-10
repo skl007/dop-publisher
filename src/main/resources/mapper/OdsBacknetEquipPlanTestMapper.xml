@@ -3,7 +3,7 @@
 <mapper namespace="com.unicom.dop.doppublisher.mapper.OdsBacknetEquipPlanTestMapper">
     <!--    新增退网设备-从表入库-->
     <insert id="insertAll" parameterType="java.util.ArrayList">
-        insert into ods_backnet_equip_plan_test
+        insert into ods_backnet_equip_plan
         (id,plan_num,plan_name,plan_time,area_city,neName,equip_type,equip_factory,backnet_type,
         ne_type,plan_backnet_time,electricity_price,is_buy_maintenance,save_money,is_bs,is_user_machroom,net_time,backnet_reason,
         is_used,is_invest,is_invest_workable,power_number,before_backnet_current,after_backnet_current,remarks,create_by)
@@ -18,7 +18,7 @@
         </foreach>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest">
-        update ods_backnet_equip_plan_test
+        update ods_backnet_equip_plan
         <set>
             <if test="planNum !=null and planNum !=''">plan_num=#{planNum},</if>
             <if test="planName !=null and planName !=''">plan_name=#{planName},</if>
@@ -52,7 +52,7 @@
     </update>
     <update id="updateByPlanNumAndPlanName">
         UPDATE
-  ods_backnet_equip_plan_test
+  ods_backnet_equip_plan
     SET
       plan_num = #{nPlanNum}
       , plan_name = #{nPlanName}
@@ -60,18 +60,19 @@
       WHERE plan_num=#{planNum}
     </update>
     <delete id="deleteByPrimaryKey">
-        delete from ods_backnet_equip_plan_test where area_city=#{areaCity} and neName=#{neName}
+        delete from ods_backnet_equip_plan where area_city=#{areaCity} and neName=#{neName}
     </delete>
     <delete id="deleteByPlanNumAndPlanName">
-        delete from ods_backnet_equip_plan_test where plan_num=#{planNum} and plan_name=#{planName}
+        delete from ods_backnet_equip_plan where plan_num=#{planNum} and plan_name=#{planName}
     </delete>
     <delete id="deleteDWDByPlanNumAndPlanName">
-        delete from dwd_backnet_equip_analyse_test where plan_num=#{planNum} and plan_name=#{planName}
+        delete from dwd_backnet_equip_analyse where plan_num=#{planNum} and plan_name=#{planName}
     </delete>
 
     <resultMap id="baseMap" type="com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest">
         <result column="plan_num" property="planNum"></result>
         <result column="plan_name" property="planName"></result>
+        <result column="plan_time" property="planTime"></result>
         <result column="area_city" property="areaCity"></result>
         <result column="neName" property="neName"></result>
         <result column="equip_type" property="equipType"></result>
@@ -101,6 +102,7 @@
         SELECT
         plan_num,
         plan_name,
+        plan_time,
         area_city,
         neName,
         equip_type,
@@ -125,7 +127,7 @@
         create_by,
         insert_time
         FROM
-        ods_backnet_equip_plan_test
+        ods_backnet_equip_plan
         WHERE plan_num = #{planNum}
         AND plan_name = #{planName}
         <if test="equipType !=null and equipType !=''">
@@ -144,7 +146,7 @@
         SELECT
         COUNT(plan_num) AS total
         FROM
-        ods_backnet_equip_plan_test
+        ods_backnet_equip_plan
         WHERE plan_num = #{planNum}
         <if test="planName !=null and planName !=''">
             AND plan_name = #{planName}
@@ -179,7 +181,7 @@
         plan_save_costs planSaveCosts
         from (
         select plan_num, plan_name,plan_time,area_city
-        from ods_backnet_equip_plan_test
+        from ods_backnet_equip_plan
         where 1=1
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -195,7 +197,7 @@
         ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
         IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000)/10000,2)
         plan_save_costs
-        FROM dwd_backnet_equip_analyse_test
+        FROM dwd_backnet_equip_analyse
         where 1=1
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -206,7 +208,7 @@
         GROUP BY plan_num, plan_name,plan_time,area_city) t1 on t3.plan_num = t1.plan_num
         LEFT JOIN (
         select plan_num,profession
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where profession is not NULL
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -249,7 +251,7 @@
         COUNT(*) backnet_eqp_num,
         ROUND(SUM(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1*
         IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(NOW()),'-12-31'),plan_backnet_time)/1000)/10000,2) plan_save_costs
-        FROM dwd_backnet_equip_analyse_test
+        FROM dwd_backnet_equip_analyse
         where 1=1
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -260,7 +262,7 @@
         GROUP BY plan_num, plan_name,area_city) t1
         LEFT JOIN (
         select plan_num,profession
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where profession is not NULL
         <if test="flag==1">
             and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
@@ -302,7 +304,7 @@
             IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000)/10000,2)
             plan_save_costs, -- 预计压降成本
             '0' common
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where 1=1
         <if test="areaCity !=null and areaCity !=''">
             and area_city =#{areaCity}
@@ -324,23 +326,53 @@
         SELECT
             count(*) backnet_eqp_num,
             '0' common
-            from dwd_backnet_equip_analyse_test
+            from dwd_backnet_equip_analyse
             where 1=1
+        <if test="areaCity !=null and areaCity !=''">
+            and area_city =#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            and profession=#{profession}
+        </if>
+        <if test="gridName !=null and gridName !=''">
+            and grid_name LIKE concat('%',#{gridName},'%')
+        </if>
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
                 and equip_status_new = '已退网'
     ) t2 on t1.common = t2.common
     LEFT JOIN(
         SELECT
             count(*) unbacknet_eqp_num,
             '0' common
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where 1=1
+        <if test="areaCity !=null and areaCity !=''">
+            and area_city =#{areaCity}
+        </if>
+        <if test="profession !=null and profession !=''">
+            and profession=#{profession}
+        </if>
+        <if test="gridName !=null and gridName !=''">
+            and grid_name LIKE concat('%',#{gridName},'%')
+        </if>
+        <if test="flag==1">
+            and plan_time = concat(concat(#{planYear},'-'),#{planMonth})
+        </if>
+        <if test="flag==2">
+            and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
+        </if>
         and equip_status_new = '未退网'
     ) t3 on t1.common = t3.common
     LEFT JOIN(
         SELECT
             count(*) onbacknet_eqp_num,
             '0' common
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where 1=1
         <if test="areaCity !=null and areaCity !=''">
             and area_city =#{areaCity}
@@ -363,7 +395,7 @@
         SELECT
             count(*) undelay_backnet_eqp_num, -- 未延期退网设备
             '0' common
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where 1=1
         <if test="areaCity !=null and areaCity !=''">
             and area_city =#{areaCity}
@@ -386,7 +418,7 @@
         SELECT
             count(*) delay_backnet_eqp_num, -- 延期退网设备
             '0' common
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where 1=1
         <if test="areaCity !=null and areaCity !=''">
             and area_city =#{areaCity}
@@ -409,7 +441,7 @@
         SELECT
             count(*) backnet_reserve_eqp_num, -- 已退网设备之转备
             '0' common
-        from dwd_backnet_equip_analyse_test tmp
+        from dwd_backnet_equip_analyse tmp
         where 1=1
         <if test="areaCity !=null and areaCity !=''">
             and area_city =#{areaCity}
@@ -432,7 +464,7 @@
         SELECT
             count(*) backnet_obsolescence_eqp_num, -- 已退网待报废设备
             '0' common
-        from dwd_backnet_equip_analyse_test tmp
+        from dwd_backnet_equip_analyse tmp
         where 1=1
         <if test="areaCity !=null and areaCity !=''">
             and area_city =#{areaCity}
@@ -466,7 +498,7 @@
             plan_time,
             COUNT(*) plan_backnet_num,
             ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000)/10000,2) plan_save_costs
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where 1=1
         and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
 --         plan_time>'2021-00' and  plan_time &lt; '2021-13'
@@ -476,7 +508,7 @@
             plan_time,
             COUNT(*) real_backnet_num,
             ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000)/10000,2) real_save_costs
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where 1=1
         and plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
 --         plan_time>'2021-00' and  plan_time &lt;'2021-13'
@@ -496,7 +528,7 @@
             area_city,
             COUNT(*) plan_backnet_num,
             ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(plan_backnet_time),'-12-31'),plan_backnet_time)/1000)/10000,2) plan_save_costs
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where
          plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
     GROUP BY area_city) t1
@@ -505,7 +537,7 @@
             area_city,
             COUNT(*) real_backnet_num,
             ROUND(sum(IFNULL(save_money,0) + IFNULL(power_dissipation,0) *24*1.1* IFNULL(electricity_price,5.5)*DATEDIFF(CONCAT(YEAR(real_backnet_time),'-12-31'),real_backnet_time)/1000)/10000,2) real_save_costs
-        from dwd_backnet_equip_analyse_test
+        from dwd_backnet_equip_analyse
         where
          plan_time > concat(#{planYear},'-00') and plan_time &lt; concat(#{planYear},'-13')
         and equip_status_new = '已退网'

@@ -2,6 +2,7 @@ package com.unicom.dop.doppublisher.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.unicom.dop.doppublisher.common.Result;
+import com.unicom.dop.doppublisher.entity.OdsBacknetEquipPlanTest;
 import org.apache.ibatis.annotations.Param;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +17,11 @@ public interface PublisherService {
                                       String gridName, String profession,
                                       String equipStatusNew,String planYear,String planMonth,
                                          Integer pageNo,
-                                         Integer pageSize);
+                                         Integer pageSize,
+                                      String neName);
 
 //    public List<Map> getEquipPlanAnalyseDetial(@Param("neName") String neName);
-    public Result getEquipPlanAnalyseDetial(@Param("neName") String neName);
+    public Result getEquipPlanAnalyseDetial(@Param("neName") String neName,String eqpSid,String areaCity);
 
 
     Result addBackNet(JSONObject jsonObject);
@@ -51,4 +53,7 @@ public interface PublisherService {
     Result planMonitoring(String planYear);
 
     Result planArea(String planYear);
+
+//    Result importBackNetExcel(String planNum, String planName, String planTime, List<OdsBacknetEquipPlanTest> list);
+    Result importBackNetExcel( List<OdsBacknetEquipPlanTest> list);
 }
